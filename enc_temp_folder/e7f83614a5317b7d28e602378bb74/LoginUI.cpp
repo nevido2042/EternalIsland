@@ -26,13 +26,10 @@ void ULoginUI::CreateServerHandler()
 
 void ULoginUI::JoinServerHandler()
 {
-	FString STR = IPTextBox->Text.ToString();
-	FName IP = FName(*STR);
-
 	ALoginMapPC* PC = Cast<ALoginMapPC>(GetOwningPlayer());
 	if (PC)
 	{
-		PC->JoinServer(IP);
+		PC->JoinServer();
 	}
 }
 

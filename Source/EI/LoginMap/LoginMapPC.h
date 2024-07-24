@@ -16,4 +16,8 @@ class EI_API ALoginMapPC : public APlayerController
 	
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	void CreateServer();
+	void JoinServer(FName IP = "127.0.0.1");
 };

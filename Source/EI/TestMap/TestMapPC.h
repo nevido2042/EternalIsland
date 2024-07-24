@@ -9,6 +9,10 @@
 /**
  * 
  */
+
+class UInputAction;
+class UInputMappingContext;
+
 UCLASS()
 class EI_API ATestMapPC : public APlayerController
 {
@@ -16,4 +20,19 @@ class EI_API ATestMapPC : public APlayerController
 	
 protected:
 	virtual void BeginPlay() override;
+
+	/** MappingContext */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputMappingContext* MappingContext;
+
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* MoveAction;
+
+	virtual void SetupInputComponent() override;
+
+	UFUNCTION()
+	void MoveToClickPoint();
+
+	FVector GetClickLocation();
 };

@@ -33,12 +33,9 @@ public:
 
 protected:
 	UFUNCTION()
-	void CreateServer();
-	UFUNCTION()
-	void JoinServer(FName IP);
+	void CreateServerHandler();
 	UFUNCTION()
 	void JoinServerHandler();
-
-	//UFUNCTION()
-	//void OnChatBoxTextCommitted(const FText& Text, ETextCommit::Type CommitMethod);
+	UFUNCTION()
+	void OnIPBoxTextCommitted(const FText& Text, ETextCommit::Type CommitMethod);
 };
