@@ -13,5 +13,8 @@ UCLASS()
 class EI_API AEIGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	AEIGameModeBase();
 	
 };
