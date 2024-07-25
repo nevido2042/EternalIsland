@@ -38,23 +38,60 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SetDestinationClickAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SetAttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SetFirstSkillAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SetSecondSkillAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SetThirdSkillAction;
+
+
+public:
+
+	virtual void EnableInput(class APlayerController* PlayerController) override;
+	virtual void DisableInput(class APlayerController* PlayerController) override;
+
+	FVector GetPointTargetLocation()
+	{
+		return CachedDestination;
+	}
+
+	FVector GetClickLocation();
+
 protected:
 	/** Input handlers for SetDestination action. */
-	void OnInputStarted();
+	///void OnInputStarted();
+	UFUNCTION()
+	void OnSetDestinationStarted();
+	UFUNCTION()
 	void OnSetDestinationTriggered();
+	UFUNCTION()
 	void OnSetDestinationReleased();
+
+	void OnAttackClicked();
+	void OnAttackTriggered();
+	void OnAttackReleased();
+
+	void OnFirstSkillClicked();
+	void OnSecondSkillClicked();
+	void OnThirdSkillClicked();
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
 	virtual void SetupInputComponent() override;
 
+
+
 	// To add mapping context
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	FVector CachedDestination;
-
-	float FollowTime; // For how long it has been pressed
 };

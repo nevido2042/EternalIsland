@@ -3,18 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "PlayerStateComponent.generated.h"
+#include "GameFramework/PlayerState.h"
+#include "DefaultPlayerState.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class EI_API UPlayerStateComponent : public UActorComponent
+/**
+ * 
+ */
+UCLASS()
+class EI_API ADefaultPlayerState : public APlayerState
 {
 	GENERATED_BODY()
-
-public:	
-	// Sets default values for this component's properties
-	UPlayerStateComponent();
+	
+public:
+	ADefaultPlayerState();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -27,7 +28,7 @@ private:
 	int32	mHP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
-	int32	mHPMax;
+	int32	mMaxHP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 	int32	mLevel;
@@ -49,7 +50,7 @@ public:
 
 	int32 GetHPMax() const
 	{
-		return mHPMax;
+		return mMaxHP;
 	}
 
 
@@ -62,13 +63,25 @@ public:
 	{
 		return mExp;
 	}
+
+	void InflictDamage(int Amount, FVector ImpactNormal = FVector(0.f));
+
+
+public:
+	void AddHP(int32 Amount)
+	{
+
+
+		int HP = mHP + Amount;
+
+		if (HP >= mMaxHP)
+			mHP = mMaxHP;
+		else
+			mHP = HP;
+
+	}
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
 };

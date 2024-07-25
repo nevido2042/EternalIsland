@@ -8,69 +8,101 @@
 #include "NiagaraFunctionLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Engine/World.h"
 
 ADefaultPlayerController::ADefaultPlayerController()
 {
+	CachedDestination = FVector::ZeroVector;
+	bShowMouseCursor = true;
+	DefaultMouseCursor = EMouseCursor::Default;
+
+}
+
+void ADefaultPlayerController::EnableInput(APlayerController* PlayerController)
+{
+	Super::EnableInput(this);
+}
+void ADefaultPlayerController::DisableInput(APlayerController* PlayerController)
+{
+	Super::DisableInput(this);
+
 }
 void ADefaultPlayerController::SetupInputComponent()
 {
+	Super::SetupInputComponent();
+
+
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup mouse input events
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestinationTriggered);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestinationReleased);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ADefaultPlayerController::OnSetDestinationReleased);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestinationStarted);
+	
+		EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnAttackClicked);
+		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnAttackTriggered);
+		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnAttackReleased);
+		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Canceled, this, &ADefaultPlayerController::OnAttackReleased);
+	
+		EnhancedInputComponent->BindAction(SetFirstSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnFirstSkillClicked);
+		EnhancedInputComponent->BindAction(SetSecondSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSecondSkillClicked);
+		EnhancedInputComponent->BindAction(SetThirdSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnThirdSkillClicked);
 	}
+
+
 }
-void ADefaultPlayerController::OnInputStarted()
+//
+//void ADefaultPlayerController::OnInputStarted()
+//{
+//	StopMovement();
+//}
+
+void ADefaultPlayerController::OnSetDestinationStarted()
 {
-	StopMovement();
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
 }
 
 void ADefaultPlayerController::OnSetDestinationTriggered()
 {
-	// We flag that the input is being pressed
-	FollowTime += GetWorld()->GetDeltaSeconds();
-
-	// We look for the location in the world where the player has pressed the input
-	FHitResult Hit;
-
-	bool bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
-
-	// If we hit a surface, cache the location
-	if (bHitSuccessful)
-	{
-		CachedDestination = Hit.Location;
-	}
-
-	// Move towards mouse pointer or touch
-	if (ControlledPawn != nullptr)
-	{
-		double distance = FVector::Distance(ControlledPawn->GetActorLocation(), CachedDestination);
-		if (distance > MinMoveDistanceThreshold)
-		{
-			FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-			ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
-		}
-	}
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
 }
 
 void ADefaultPlayerController::OnSetDestinationReleased()
 {
-	// If it was a short press
-	if (FollowTime <= ShortPressThreshold)
-	{
-		double distance = FVector::Distance(ControlledPawn->GetActorLocation(), CachedDestination);
 
-		if (distance > MinMoveDistanceThreshold)
-		{
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-		}
-	}
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, GetClickLocation(), FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+}
 
-	FollowTime = 0.f;
+void ADefaultPlayerController::OnAttackClicked()
+{
+	Cast<AMainPlayerCharacter>(ControlledPawn)->NomalAttackHitCheck();
+}
+
+//void ADefaultPlayerController::OnAttackTriggered()
+//{
+//	StopMovement();
+//}
+//
+//void ADefaultPlayerController::OnAttackReleased()
+//{
+//	StopMovement();
+//}
+//
+void ADefaultPlayerController::OnFirstSkillClicked()
+{
+	StopMovement();
+}
+
+void ADefaultPlayerController::OnSecondSkillClicked()
+{
+	StopMovement();
+}
+
+void ADefaultPlayerController::OnThirdSkillClicked()
+{
+	StopMovement();
 }
 
 
@@ -88,9 +120,26 @@ void ADefaultPlayerController::BeginPlay()
 	}
 
 
+
 }
 
 void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+}
+
+FVector ADefaultPlayerController::GetClickLocation()
+{
+	FHitResult Hit;
+	bool bHitSuccessful = false;
+
+	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+
+	// If we hit a surface, cache the location
+	if (bHitSuccessful)
+	{
+		return Hit.Location;
+	}
+
+	return FVector::ZeroVector;
 }
