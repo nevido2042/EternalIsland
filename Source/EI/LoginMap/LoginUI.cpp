@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "LoginMap/LoginMapPC.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void ULoginUI::NativeConstruct()
 {
@@ -13,6 +14,7 @@ void ULoginUI::NativeConstruct()
 	CreateServerBtn->OnClicked.AddDynamic(this, &ULoginUI::CreateServerHandler);
 	JoinServerBtn->OnClicked.AddDynamic(this, &ULoginUI::JoinServerHandler);
 	IPTextBox->OnTextCommitted.AddDynamic(this, &ULoginUI::OnIPBoxTextCommitted);
+	QuitBtn->OnClicked.AddDynamic(this, &ULoginUI::QuitGame);
 }
 
 void ULoginUI::CreateServerHandler()
@@ -48,6 +50,11 @@ void ULoginUI::OnIPBoxTextCommitted(const FText& Text, ETextCommit::Type CommitM
 	{
 		PC->JoinServer(IP);
 	}
+}
+
+void ULoginUI::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, false);
 }
 
 
