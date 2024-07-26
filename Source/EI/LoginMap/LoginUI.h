@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* IPTextBox;
 
+	UPROPERTY(Meta = (BindWidget))
+	UButton* QuitBtn;
+
 public:
 	virtual void NativeConstruct() override;
 
@@ -36,6 +39,10 @@ protected:
 	void CreateServerHandler();
 	UFUNCTION()
 	void JoinServerHandler();
+
 	UFUNCTION()
 	void OnIPBoxTextCommitted(const FText& Text, ETextCommit::Type CommitMethod);
+
+	UFUNCTION()
+	void QuitGame();
 };

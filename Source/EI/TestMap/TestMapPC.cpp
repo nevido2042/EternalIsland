@@ -9,7 +9,7 @@
 void ATestMapPC::BeginPlay()
 {
 	SetShowMouseCursor(true);
-	SetInputMode(FInputModeGameOnly());
+	SetInputMode(FInputModeGameAndUI());
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
