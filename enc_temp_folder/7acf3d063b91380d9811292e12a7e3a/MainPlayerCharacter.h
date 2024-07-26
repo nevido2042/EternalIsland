@@ -33,10 +33,9 @@ public:
 	}
 
 public:
-	virtual void NormalAttack();
-	void NormalAttackHitCheck(float Radius = 100.f, float Height = 100.f);
-protected:
-	void LookAtMousePos();
+	virtual void NomalAttack();
+	void NomalAttackHitCheck();
+
 
 public:
 	virtual float TakeDamage(float DamageAmount,

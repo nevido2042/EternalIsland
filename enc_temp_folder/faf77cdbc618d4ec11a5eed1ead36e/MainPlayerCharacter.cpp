@@ -7,8 +7,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "EI/Player/DefaultPlayerController.h"
 
 // Sets default values
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -61,39 +59,27 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 }
 
-void AMainPlayerCharacter::NormalAttack()
+void AMainPlayerCharacter::NomalAttack()
 {
-	NormalAttackHitCheck();
+	NomalAttackHitCheck();
 }
 
-void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
+void AMainPlayerCharacter::NomalAttackHitCheck()
 {
 	FHitResult result;
 	FCollisionQueryParams param(NAME_None, false, this);
 
 	FVector StartLoc = GetActorLocation();
 	StartLoc.Z += 100.f;
-	FVector EndLoc = StartLoc + GetActorForwardVector() * Height * 2.f;
-	FQuat CapsuleRot = FQuat::MakeFromRotator(FRotator(90.f, GetActorRotation().Yaw, 0.0f));
-	
+
+	FVector EndLoc = StartLoc + GetActorForwardVector() * 50;
+
 	GetWorld()->SweepSingleByChannel(
 		result,
 		StartLoc, EndLoc,
-		CapsuleRot,
+		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel1,
-		FCollisionShape::MakeCapsule(Radius, Height), param);
-
-	DrawDebugSphere(GetWorld(), StartLoc, 10.f, 32, FColor::Green, false, 1.f);
-	DrawDebugSphere(GetWorld(), EndLoc, 10.f, 32, FColor::Red, false, 1.f);
-	DrawDebugCapsule(
-		GetWorld(),											// 월드 컨텍스트
-		(StartLoc + EndLoc) / 2.f,								// 캡슐의 중심 위치
-		Height,												// 캡슐의 반 높이 (전체 높이의 절반)
-		Radius,												// 캡슐의 반지름
-		CapsuleRot,									// 캡슐의 회전 (기본적으로 회전 없음)
-		FColor::Red,										// 캡슐의 색상
-		false												// 지속적으로 드로우 (true면 지속적으로, false면 한 번만)
-	);
+		FCollisionShape::MakeCapsule(100.f, 100.f), param);
 
 	AActor* HitActor = result.GetActor();
 	if (!IsValid(HitActor))
@@ -118,15 +104,6 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 
 	targetState->InflictDamage(mState->GetAttackDamage(), result.ImpactNormal);
 	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
-}
-
-void AMainPlayerCharacter::LookAtMousePos()
-{
-	ADefaultPlayerController* Cont = Cast<ADefaultPlayerController>(GetController());
-	FVector TargetLocation = Cont->GetClickLocation();
-	FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-	LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
-	SetActorRotation(LookAtRotator);
 }
 
 float AMainPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

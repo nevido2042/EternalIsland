@@ -77,7 +77,7 @@ void ADefaultPlayerController::OnSetDestinationReleased()
 
 void ADefaultPlayerController::OnAttackClicked()
 {
-	Cast<AMainPlayerCharacter>(ControlledPawn)->NormalAttack();
+	Cast<AMainPlayerCharacter>(ControlledPawn)->NomalAttack();
 }
 
 //void ADefaultPlayerController::OnAttackTriggered()
