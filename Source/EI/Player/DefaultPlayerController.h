@@ -94,4 +94,21 @@ protected:
 
 private:
 	FVector CachedDestination;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerMoveToLocation(const FVector& DestLocation);
+	void ServerMoveToLocation_Implementation(const FVector& DestLocation);
+	bool ServerMoveToLocation_Validate(const FVector& DestLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastMoveToLocation(const FVector& DestLocation);
+	void MulticastMoveToLocation_Implementation(const FVector& DestLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSpawnFX(const FVector& Location);
+	void MulticastSpawnFX_Implementation(const FVector& Location);
+
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 };

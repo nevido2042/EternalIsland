@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Player/MainPlayerCharacter.h"
+#include "MainPlayerCharacter.h"
 #include "RangedPlayerCharacter.generated.h"
 
 /**
@@ -15,6 +15,7 @@ class EI_API ARangedPlayerCharacter : public AMainPlayerCharacter
 	GENERATED_BODY()
 
 protected:
+
 	virtual void NormalAttack() override;
 
 	UPROPERTY(EditAnywhere)

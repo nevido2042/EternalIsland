@@ -60,19 +60,25 @@ void ADefaultPlayerController::SetupInputComponent()
 
 void ADefaultPlayerController::OnSetDestinationStarted()
 {
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
+	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
+	FVector ClickLocation = GetClickLocation();
+	ServerMoveToLocation(ClickLocation);
 }
 
 void ADefaultPlayerController::OnSetDestinationTriggered()
 {
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
+	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
+	FVector ClickLocation = GetClickLocation();
+	ServerMoveToLocation(ClickLocation);
 }
 
 void ADefaultPlayerController::OnSetDestinationReleased()
 {
 
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, GetClickLocation(), FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
+	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, GetClickLocation(), FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+	FVector ClickLocation = GetClickLocation();
+	ServerMoveToLocation(ClickLocation);
 }
 
 void ADefaultPlayerController::OnAttackClicked()
@@ -128,6 +134,27 @@ void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void ADefaultPlayerController::ServerMoveToLocation_Implementation(const FVector& DestLocation)
+{
+	MulticastMoveToLocation(DestLocation);
+	MulticastSpawnFX(DestLocation);
+}
+
+bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& DestLocation)
+{
+	return true;
+}
+
+void ADefaultPlayerController::MulticastMoveToLocation_Implementation(const FVector& DestLocation)
+{
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+}
+
+void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Location)
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, Location, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+}
+
 FVector ADefaultPlayerController::GetClickLocation()
 {
 	FHitResult Hit;
@@ -142,4 +169,9 @@ FVector ADefaultPlayerController::GetClickLocation()
 	}
 
 	return FVector::ZeroVector;
+}
+
+void ADefaultPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }

@@ -61,12 +61,12 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 }
 
-void AMainPlayerCharacter::NormalAttack()
+void AMainPlayerCharacter::NormalAttack_Implementation()
 {
 	NormalAttackHitCheck();
 }
 
-void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
+void AMainPlayerCharacter::NormalAttackHitCheck_Implementation(float Radius , float Height)
 {
 	FHitResult result;
 	FCollisionQueryParams param(NAME_None, false, this);
@@ -120,8 +120,10 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
 }
 
-void AMainPlayerCharacter::LookAtMousePos()
+void AMainPlayerCharacter::LookAtMousePos_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("LookAtMousePos_Implementation"));
+
 	ADefaultPlayerController* Cont = Cast<ADefaultPlayerController>(GetController());
 	FVector TargetLocation = Cont->GetClickLocation();
 	FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
@@ -162,4 +164,3 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-

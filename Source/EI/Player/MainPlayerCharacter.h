@@ -33,10 +33,18 @@ public:
 	}
 
 public:
+	UFUNCTION(Server, Reliable)
 	virtual void NormalAttack();
+	virtual void NormalAttack_Implementation();
+
+	UFUNCTION(Server, Reliable)
 	void NormalAttackHitCheck(float Radius = 100.f, float Height = 100.f);
+	void NormalAttackHitCheck_Implementation(float Radius = 100.f, float Height = 100.f);
+
 protected:
+	UFUNCTION(Client, Reliable)
 	void LookAtMousePos();
+	void LookAtMousePos_Implementation();
 
 public:
 	virtual float TakeDamage(float DamageAmount,
@@ -70,5 +78,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 
 };
