@@ -2,6 +2,7 @@
 
 
 #include "MainPlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
 #include "DefaultPlayerState.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -59,14 +60,16 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetMesh()->SetupAttachment(GetCapsuleComponent());
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -GetCapsuleComponent()->GetScaledCapsuleHalfHeight())); // Position the mesh
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+	bReplicates = true;
 }
 
-void AMainPlayerCharacter::NormalAttack_Implementation()
+void AMainPlayerCharacter::NormalAttack()
 {
 	NormalAttackHitCheck();
 }
 
-void AMainPlayerCharacter::NormalAttackHitCheck_Implementation(float Radius , float Height)
+void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 {
 	FHitResult result;
 	FCollisionQueryParams param(NAME_None, false, this);
@@ -120,15 +123,25 @@ void AMainPlayerCharacter::NormalAttackHitCheck_Implementation(float Radius , fl
 	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
 }
 
-void AMainPlayerCharacter::LookAtMousePos_Implementation()
+void AMainPlayerCharacter::LookAtMousePos(const FVector& TargetLocation)
 {
-	UE_LOG(LogTemp, Warning, TEXT("LookAtMousePos_Implementation"));
-
-	ADefaultPlayerController* Cont = Cast<ADefaultPlayerController>(GetController());
-	FVector TargetLocation = Cont->GetClickLocation();
+	//ADefaultPlayerController* Cont = Cast<ADefaultPlayerController>(GetController());
+	//FVector TargetLocation = Cont->GetClickLocation();
+	//FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	//LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
+	//SetActorRotation(LookAtRotator);
+	//
 	FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
 	LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
 	SetActorRotation(LookAtRotator);
+}
+
+void AMainPlayerCharacter::MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage)
+{
+	if (Montage)
+	{
+		PlayAnimMontage(Montage);
+	}
 }
 
 float AMainPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

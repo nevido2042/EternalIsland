@@ -33,24 +33,20 @@ public:
 	}
 
 public:
-	UFUNCTION(Server, Reliable)
 	virtual void NormalAttack();
-	virtual void NormalAttack_Implementation();
 
-	UFUNCTION(Server, Reliable)
 	void NormalAttackHitCheck(float Radius = 100.f, float Height = 100.f);
-	void NormalAttackHitCheck_Implementation(float Radius = 100.f, float Height = 100.f);
 
-protected:
-	UFUNCTION(Client, Reliable)
-	void LookAtMousePos();
-	void LookAtMousePos_Implementation();
+	void LookAtMousePos(const FVector& TargetLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayAttackMontage(UAnimMontage* Montage);
+	void MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage);
 
 public:
 	virtual float TakeDamage(float DamageAmount,
 		struct FDamageEvent const& DamageEvent,
 		class AController* EventInstigator, AActor* DamageCauser);
-private:
 
 	void InflictDamageTo(FHitResult result, float Multiplier = 1.0F);
 

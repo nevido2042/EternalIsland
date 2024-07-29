@@ -18,6 +18,24 @@ ADefaultPlayerController::ADefaultPlayerController()
 
 }
 
+void ADefaultPlayerController::OnPossess(APawn* InPawn)
+{
+	// 초기화
+	Super::OnPossess(InPawn);
+	ControlledPawn = InPawn;
+	ControlledCharacter = Cast<AMainPlayerCharacter>(InPawn);
+
+	// 초기화 로그
+	if (ControlledCharacter)
+	{
+		UE_LOG(LogTemp, Log, TEXT("ControlledCharacter initialized in OnPossess: %s"), *ControlledCharacter->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("ControlledCharacter initialization failed in OnPossess"));
+	}
+}
+
 void ADefaultPlayerController::EnableInput(APlayerController* PlayerController)
 {
 	Super::EnableInput(this);
@@ -62,14 +80,29 @@ void ADefaultPlayerController::OnSetDestinationStarted()
 {
 	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
 	FVector ClickLocation = GetClickLocation();
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->LookAtMousePos(ClickLocation); // 로컬 클라이언트에서 즉시 회전
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("ControlledCharacter is null"));
+	}
 	ServerMoveToLocation(ClickLocation);
+	ServerLookAtMousePos(ClickLocation);
+
 }
 
 void ADefaultPlayerController::OnSetDestinationTriggered()
 {
 	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
 	FVector ClickLocation = GetClickLocation();
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->LookAtMousePos(ClickLocation); // 로컬 클라이언트에서 즉시 회전
+	}
 	ServerMoveToLocation(ClickLocation);
+	ServerLookAtMousePos(ClickLocation);
 }
 
 void ADefaultPlayerController::OnSetDestinationReleased()
@@ -77,25 +110,32 @@ void ADefaultPlayerController::OnSetDestinationReleased()
 
 	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
 	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, GetClickLocation(), FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+
 	FVector ClickLocation = GetClickLocation();
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->LookAtMousePos(ClickLocation); // 로컬 클라이언트에서 즉시 회전
+	}
 	ServerMoveToLocation(ClickLocation);
+	ServerLookAtMousePos(ClickLocation);
 }
 
 void ADefaultPlayerController::OnAttackClicked()
 {
-	Cast<AMainPlayerCharacter>(ControlledPawn)->NormalAttack();
+	//Cast<AMainPlayerCharacter>(ControlledPawn)->NormalAttack();
+	UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
+
+	if (ControlledCharacter)
+	{
+		FVector ClickLocation = GetClickLocation();
+		// 로그 출력: 클릭 위치 확인
+		UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
+
+		ServerNormalAttack(ClickLocation); // 서버에서 공격을 처리하도록 설정
+	}
 }
 
-//void ADefaultPlayerController::OnAttackTriggered()
-//{
-//	StopMovement();
-//}
-//
-//void ADefaultPlayerController::OnAttackReleased()
-//{
-//	StopMovement();
-//}
-//
+
 void ADefaultPlayerController::OnFirstSkillClicked()
 {
 	StopMovement();
@@ -117,15 +157,20 @@ void ADefaultPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ControlledPawn = GetPawn();
+	//ControlledPawn = GetPawn();
+	//
+	////Add Input Mapping Context
+	//if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	//{
+	//	Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	//}
+	ControlledCharacter = Cast<AMainPlayerCharacter>(GetPawn());  // ControlledCharacter 초기화
 
-	//Add Input Mapping Context
+	// Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
-
-
 
 }
 
@@ -155,6 +200,53 @@ void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Lo
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, Location, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 }
 
+void ADefaultPlayerController::ServerLookAtMousePos_Implementation(const FVector& TargetLocation)
+{
+	MulticastLookAtMousePos(TargetLocation);
+}
+
+bool ADefaultPlayerController::ServerLookAtMousePos_Validate(const FVector& TargetLocation)
+{
+	return true;
+}
+
+void ADefaultPlayerController::MulticastLookAtMousePos_Implementation(const FVector& TargetLocation)
+{
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->LookAtMousePos(TargetLocation);
+	}
+
+}
+
+void ADefaultPlayerController::ServerNormalAttack_Implementation(const FVector& ClickLocation)
+{
+	UE_LOG(LogTemp, Log, TEXT("ServerNormalAttack called on server"));
+	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->LookAtMousePos(ClickLocation);
+		ControlledCharacter->NormalAttack();
+		MulticastNormalAttack(ClickLocation);
+	}
+}
+
+bool ADefaultPlayerController::ServerNormalAttack_Validate(const FVector& ClickLocation)
+{
+
+	return true;
+}
+
+void ADefaultPlayerController::MulticastNormalAttack_Implementation(const FVector& ClickLocation)
+{
+	if (ControlledCharacter)
+	{
+		UE_LOG(LogTemp, Log, TEXT("MulticastNormalAttack called on client/server"));
+		ControlledCharacter->LookAtMousePos(ClickLocation);
+		ControlledCharacter->NormalAttack();
+	}
+}
+
 FVector ADefaultPlayerController::GetClickLocation()
 {
 	FHitResult Hit;
@@ -170,6 +262,8 @@ FVector ADefaultPlayerController::GetClickLocation()
 
 	return FVector::ZeroVector;
 }
+
+
 
 void ADefaultPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

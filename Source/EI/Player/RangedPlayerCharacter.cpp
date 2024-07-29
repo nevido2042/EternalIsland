@@ -2,10 +2,18 @@
 
 
 #include "RangedPlayerCharacter.h"
+#include "DefaultPlayerController.h"
 
 void ARangedPlayerCharacter::NormalAttack()
 {
-	LookAtMousePos();
-	PlayAnimMontage(NormalAttackMontage);
+	//PlayAnimMontage(NormalAttackMontage);
+    if (NormalAttackMontage)
+    {
+        MulticastPlayAttackMontage(NormalAttackMontage);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
+    }
 	NormalAttackHitCheck(50.f, 500.f);
 }

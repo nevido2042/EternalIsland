@@ -17,6 +17,8 @@ class EI_API ADefaultPlayerController : public APlayerController
 public:
 	ADefaultPlayerController();
 
+	virtual void OnPossess(APawn* InPawn) override;
+
 	/** Time Threshold to know if it was a short press */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float ShortPressThreshold;
@@ -63,6 +65,10 @@ public:
 
 	FVector GetClickLocation();
 
+private:
+	UPROPERTY()
+	class AMainPlayerCharacter* ControlledCharacter;
+
 protected:
 	/** Input handlers for SetDestination action. */
 	///void OnInputStarted();
@@ -74,8 +80,8 @@ protected:
 	void OnSetDestinationReleased();
 
 	void OnAttackClicked();
-	void OnAttackTriggered();
-	void OnAttackReleased();
+	//void OnAttackTriggered();
+	//void OnAttackReleased();
 
 	void OnFirstSkillClicked();
 	void OnSecondSkillClicked();
@@ -95,6 +101,7 @@ protected:
 private:
 	FVector CachedDestination;
 
+
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerMoveToLocation(const FVector& DestLocation);
 	void ServerMoveToLocation_Implementation(const FVector& DestLocation);
@@ -108,6 +115,23 @@ private:
 	void MulticastSpawnFX(const FVector& Location);
 	void MulticastSpawnFX_Implementation(const FVector& Location);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerLookAtMousePos(const FVector& TargetLocation);
+	void ServerLookAtMousePos_Implementation(const FVector& TargetLocation);
+	bool ServerLookAtMousePos_Validate(const FVector& TargetLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLookAtMousePos(const FVector& TargetLocation);
+	void MulticastLookAtMousePos_Implementation(const FVector& TargetLocation);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerNormalAttack(const FVector& ClickLocation);
+	void ServerNormalAttack_Implementation(const FVector& ClickLocation);
+	bool ServerNormalAttack_Validate(const FVector& ClickLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastNormalAttack(const FVector& ClickLocation);
+	void MulticastNormalAttack_Implementation(const FVector& ClickLocation);
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
