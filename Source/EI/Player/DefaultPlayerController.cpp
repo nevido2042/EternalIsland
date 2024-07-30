@@ -53,7 +53,7 @@ void ADefaultPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup mouse input events
-		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestinationTriggered);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestinationReleased);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestinationStarted);
@@ -70,51 +70,33 @@ void ADefaultPlayerController::SetupInputComponent()
 
 
 }
-//
-//void ADefaultPlayerController::OnInputStarted()
-//{
-//	StopMovement();
-//}
+
+void ADefaultPlayerController::OnInputStarted()
+{
+	StopMovement();
+}
 
 void ADefaultPlayerController::OnSetDestinationStarted()
 {
-	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
-	FVector ClickLocation = GetClickLocation();
-	if (ControlledCharacter)
-	{
-		ControlledCharacter->LookAtMousePos(ClickLocation); // 로컬 클라이언트에서 즉시 회전
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("ControlledCharacter is null"));
-	}
-	ServerMoveToLocation(ClickLocation);
-	ServerLookAtMousePos(ClickLocation);
-
+	ProcessDestinationInput();
 }
 
 void ADefaultPlayerController::OnSetDestinationTriggered()
 {
-	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
-	FVector ClickLocation = GetClickLocation();
-	if (ControlledCharacter)
-	{
-		ControlledCharacter->LookAtMousePos(ClickLocation); // 로컬 클라이언트에서 즉시 회전
-	}
-	ServerMoveToLocation(ClickLocation);
-	ServerLookAtMousePos(ClickLocation);
+	ProcessDestinationInput();
 }
 
 void ADefaultPlayerController::OnSetDestinationReleased()
 {
+	ProcessDestinationInput();
+}
 
-	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, GetClickLocation());
-	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, GetClickLocation(), FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-
+void ADefaultPlayerController::ProcessDestinationInput()
+{
 	FVector ClickLocation = GetClickLocation();
 	if (ControlledCharacter)
 	{
-		ControlledCharacter->LookAtMousePos(ClickLocation); // 로컬 클라이언트에서 즉시 회전
+		ControlledCharacter->LookAtMousePos(ClickLocation);
 	}
 	ServerMoveToLocation(ClickLocation);
 	ServerLookAtMousePos(ClickLocation);
@@ -122,9 +104,7 @@ void ADefaultPlayerController::OnSetDestinationReleased()
 
 void ADefaultPlayerController::OnAttackClicked()
 {
-	//Cast<AMainPlayerCharacter>(ControlledPawn)->NormalAttack();
 	UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
-
 	if (ControlledCharacter)
 	{
 		FVector ClickLocation = GetClickLocation();
@@ -157,13 +137,6 @@ void ADefaultPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ControlledPawn = GetPawn();
-	//
-	////Add Input Mapping Context
-	//if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-	//{
-	//	Subsystem->AddMappingContext(DefaultMappingContext, 0);
-	//}
 	ControlledCharacter = Cast<AMainPlayerCharacter>(GetPawn());  // ControlledCharacter 초기화
 
 	// Add Input Mapping Context
@@ -252,15 +225,15 @@ FVector ADefaultPlayerController::GetClickLocation()
 	FHitResult Hit;
 	bool bHitSuccessful = false;
 
-	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
-
 	// If we hit a surface, cache the location
-	if (bHitSuccessful)
+	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	return bHitSuccessful ? Hit.Location : FVector::ZeroVector;
+	/*if (bHitSuccessful)
 	{
 		return Hit.Location;
 	}
 
-	return FVector::ZeroVector;
+	return FVector::ZeroVector;*/
 }
 
 
