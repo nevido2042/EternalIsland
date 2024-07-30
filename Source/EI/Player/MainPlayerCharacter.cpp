@@ -83,7 +83,6 @@ void AMainPlayerCharacter::BeginPlay()
 	//}
 
 	mState = GetPlayerState<ADefaultPlayerState>();
-
 }
 void AMainPlayerCharacter::NormalAttack()
 {

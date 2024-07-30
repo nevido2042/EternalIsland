@@ -2,11 +2,15 @@
 
 
 #include "MainPlayerCharacter.h"
-#include "DefaultPlayerState.h"
+#include "Net/UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "EI/Player/DefaultPlayerController.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -57,29 +61,66 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetMesh()->SetupAttachment(GetCapsuleComponent());
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -GetCapsuleComponent()->GetScaledCapsuleHalfHeight())); // Position the mesh
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+	bReplicates = true;
 }
 
-void AMainPlayerCharacter::NomalAttack()
+
+
+// Called when the game starts or when spawned
+void AMainPlayerCharacter::BeginPlay()
 {
-	NomalAttackHitCheck();
+	Super::BeginPlay();
+
+
+	//APlayerController* PC = Cast<APlayerController>(GetController());
+	//if (PC)
+	//{
+	//	mState = PC->GetPlayerState<ADefaultPlayerState>();
+	//	if (!mState)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("PlayerState is not valid in BeginPlay"));
+	//	}
+	//}
+
+	mState = GetPlayerState<ADefaultPlayerState>();
+
+	CreateWidget(GetWorld(), MainWidgetAsset)->AddToViewport();
+
+}
+void AMainPlayerCharacter::NormalAttack()
+{
+	NormalAttackHitCheck();
 }
 
-void AMainPlayerCharacter::NomalAttackHitCheck()
+void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 {
 	FHitResult result;
 	FCollisionQueryParams param(NAME_None, false, this);
 
 	FVector StartLoc = GetActorLocation();
 	StartLoc.Z += 100.f;
-
-	FVector EndLoc = StartLoc + GetActorForwardVector() * 50;
-
+	FVector EndLoc = StartLoc + GetActorForwardVector() * Height * 2.f;
+	FQuat CapsuleRot = FQuat::MakeFromRotator(FRotator(90.f, GetActorRotation().Yaw, 0.0f));
+	
 	GetWorld()->SweepSingleByChannel(
 		result,
 		StartLoc, EndLoc,
-		FQuat::Identity,
+		CapsuleRot,
 		ECollisionChannel::ECC_GameTraceChannel1,
-		FCollisionShape::MakeCapsule(100.f, 100.f), param);
+		FCollisionShape::MakeCapsule(Radius, Height), param);
+
+	DrawDebugSphere(GetWorld(), StartLoc, 10.f, 32, FColor::Green, false, 1.f);
+	DrawDebugSphere(GetWorld(), EndLoc, 10.f, 32, FColor::Red, false, 1.f);
+	DrawDebugCapsule(
+		GetWorld(),											// 월드 컨텍스트
+		(StartLoc + EndLoc) / 2.f,								// 캡슐의 중심 위치
+		Height,												// 캡슐의 반 높이 (전체 높이의 절반)
+		Radius,												// 캡슐의 반지름
+		CapsuleRot,									// 캡슐의 회전 (기본적으로 회전 없음)
+		FColor::Red,										// 캡슐의 색상
+		false												// 지속적으로 드로우 (true면 지속적으로, false면 한 번만)
+	);
 
 	AActor* HitActor = result.GetActor();
 	if (!IsValid(HitActor))
@@ -106,6 +147,27 @@ void AMainPlayerCharacter::NomalAttackHitCheck()
 	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
 }
 
+void AMainPlayerCharacter::LookAtMousePos(const FVector& TargetLocation)
+{
+	//ADefaultPlayerController* Cont = Cast<ADefaultPlayerController>(GetController());
+	//FVector TargetLocation = Cont->GetClickLocation();
+	//FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	//LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
+	//SetActorRotation(LookAtRotator);
+	//
+	FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
+	SetActorRotation(LookAtRotator);
+}
+
+void AMainPlayerCharacter::MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage)
+{
+	if (Montage)
+	{
+		PlayAnimMontage(Montage);
+	}
+}
+
 float AMainPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	return 0.0f;
@@ -119,20 +181,6 @@ void AMainPlayerCharacter::DrawNomalAttackDebug(FVector CenterLocation, FQuat So
 {
 }
 
-// Called when the game starts or when spawned
-void AMainPlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	mState = GetPlayerState<ADefaultPlayerState>();
-}
-
-// Called every frame
-void AMainPlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 // Called to bind functionality to input
 void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -140,3 +188,28 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 }
 
+
+//ADefaultPlayerState* AMainPlayerCharacter::GetPlayerState() const
+//{
+//	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
+//	{
+//		return Cast<ADefaultPlayerState>(PC->PlayerState);
+//	}
+//	return nullptr;
+//}
+
+
+// Called every frame
+void AMainPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+
+}
+
+void AMainPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMainPlayerCharacter, mState);
+}

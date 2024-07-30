@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DefaultPlayerState.h"
 #include "GameFramework/Character.h"
 #include "MainPlayerCharacter.generated.h"
 
@@ -32,16 +33,24 @@ public:
 		return mState;
 	}
 
-public:
-	virtual void NomalAttack();
-	void NomalAttackHitCheck();
+//public:
+//	virtual ADefaultPlayerState* GetPlayerState() const;
 
+public:
+	virtual void NormalAttack();
+
+	void NormalAttackHitCheck(float Radius = 100.f, float Height = 100.f);
+
+	void LookAtMousePos(const FVector& TargetLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayAttackMontage(UAnimMontage* Montage);
+	void MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage);
 
 public:
 	virtual float TakeDamage(float DamageAmount,
 		struct FDamageEvent const& DamageEvent,
 		class AController* EventInstigator, AActor* DamageCauser);
-private:
 
 	void InflictDamageTo(FHitResult result, float Multiplier = 1.0F);
 
@@ -56,8 +65,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data, meta = (AllowPrivateAccess = "true"))
-	class ADefaultPlayerState* mState;
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = Data, meta = (AllowPrivateAccess = "true"))
+	ADefaultPlayerState* mState;
 
 protected:
 	// Called when the game starts or when spawned
@@ -70,4 +79,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> MainWidgetAsset;
 };
