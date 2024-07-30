@@ -5,6 +5,8 @@
 #include "DefaultPlayerController.h"
 #include "MainPlayerCharacter.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/DefaultPlayerController.h"
+#include "UI/MainWidget.h"
 
 ADefaultPlayerState::ADefaultPlayerState()
 {
@@ -17,6 +19,16 @@ ADefaultPlayerState::ADefaultPlayerState()
 void ADefaultPlayerState::InflictDamage(int Amount, FVector ImpactNormal)
 {
 	AddHP(-Amount);
+
+	//쓰레기값을 가져오는 에러
+	UUserWidget* UserWidget = nullptr;// = Cast<ADefaultPlayerController>(GetPlayerController())->GetMainWidget();
+
+	if (UserWidget)
+	{
+		//그런데 이 안으로 들어옴
+		/*UMainWidget* MainWidget = Cast<UMainWidget>(UserWidget);
+		MainWidget->UpdateHPBar((float)mHP / (float)mMaxHP);*/
+	}
 	if (mHP <= 0)
 	{
 		AMainPlayerCharacter* Character = Cast<AMainPlayerCharacter>(GetPlayerController()->GetCharacter());

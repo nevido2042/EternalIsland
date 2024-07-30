@@ -134,4 +134,7 @@ public:
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> MainWidgetAsset;
+	UUserWidget* MainWidget;
+public:
+	UUserWidget* GetMainWidget() { return MainWidget; }
 };

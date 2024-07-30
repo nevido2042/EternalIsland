@@ -132,14 +132,16 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 		return;
 	}
 
-	ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
+	//ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
+	ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(targetCharacter->GetPlayerState());
+	ADefaultPlayerState* MyState = Cast<ADefaultPlayerState>(GetPlayerState());
 	if (!IsValid(targetState))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attack - targetState Is Not Valid"));
 		return;
 	}
 
-	targetState->InflictDamage(mState->GetAttackDamage(), result.ImpactNormal);
+	targetState->InflictDamage(MyState->GetAttackDamage(), result.ImpactNormal);
 	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
 }
 

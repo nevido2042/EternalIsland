@@ -135,7 +135,8 @@ void ADefaultPlayerController::BeginPlay()
 
 	if (MainWidgetAsset)
 	{
-		CreateWidget(GetWorld(), MainWidgetAsset)->AddToViewport();
+		MainWidget = CreateWidget(GetWorld(), MainWidgetAsset);
+		MainWidget->AddToViewport();
 	}
 }
 
