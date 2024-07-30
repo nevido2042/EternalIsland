@@ -18,22 +18,22 @@ public:
 	ADefaultPlayerState();
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FString	mName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 	int32	mAttackDamage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_HP, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 	int32	mHP;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 	int32	mMaxHP;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Level, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 	int32	mLevel;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Exp, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 	int32	mExp;
 
 public:
@@ -80,8 +80,22 @@ public:
 			mHP = HP;
 
 	}
+
+public:
+	UFUNCTION()
+	void OnRep_HP();
+
+	UFUNCTION()
+	void OnRep_Level();
+
+	UFUNCTION()
+	void OnRep_Exp();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 };

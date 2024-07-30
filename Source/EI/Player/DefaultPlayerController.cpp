@@ -54,9 +54,9 @@ void ADefaultPlayerController::SetupInputComponent()
 	{
 		// Setup mouse input events
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestinationTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestinationReleased);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestinationStarted);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestination);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestination);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestination);
 	
 		EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnAttackClicked);
 		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnAttackTriggered);
@@ -76,22 +76,8 @@ void ADefaultPlayerController::OnInputStarted()
 	StopMovement();
 }
 
-void ADefaultPlayerController::OnSetDestinationStarted()
-{
-	ProcessDestinationInput();
-}
 
-void ADefaultPlayerController::OnSetDestinationTriggered()
-{
-	ProcessDestinationInput();
-}
-
-void ADefaultPlayerController::OnSetDestinationReleased()
-{
-	ProcessDestinationInput();
-}
-
-void ADefaultPlayerController::ProcessDestinationInput()
+void ADefaultPlayerController::OnSetDestination()
 {
 	FVector ClickLocation = GetClickLocation();
 	if (ControlledCharacter)
@@ -104,6 +90,7 @@ void ADefaultPlayerController::ProcessDestinationInput()
 
 void ADefaultPlayerController::OnAttackClicked()
 {
+	StopMovement();
 	UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
 	if (ControlledCharacter)
 	{
@@ -194,10 +181,12 @@ void ADefaultPlayerController::MulticastLookAtMousePos_Implementation(const FVec
 
 void ADefaultPlayerController::ServerNormalAttack_Implementation(const FVector& ClickLocation)
 {
+
 	UE_LOG(LogTemp, Log, TEXT("ServerNormalAttack called on server"));
 	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
 	if (ControlledCharacter)
 	{
+		StopMovement();
 		ControlledCharacter->LookAtMousePos(ClickLocation);
 		ControlledCharacter->NormalAttack();
 		MulticastNormalAttack(ClickLocation);

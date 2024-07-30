@@ -3,9 +3,9 @@
 
 #include "MainPlayerCharacter.h"
 #include "Net/UnrealNetwork.h"
-#include "DefaultPlayerState.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -64,6 +64,27 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	bReplicates = true;
 }
 
+
+
+// Called when the game starts or when spawned
+void AMainPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+	//APlayerController* PC = Cast<APlayerController>(GetController());
+	//if (PC)
+	//{
+	//	mState = PC->GetPlayerState<ADefaultPlayerState>();
+	//	if (!mState)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("PlayerState is not valid in BeginPlay"));
+	//	}
+	//}
+
+	mState = GetPlayerState<ADefaultPlayerState>();
+
+}
 void AMainPlayerCharacter::NormalAttack()
 {
 	NormalAttackHitCheck();
@@ -157,23 +178,35 @@ void AMainPlayerCharacter::DrawNomalAttackDebug(FVector CenterLocation, FQuat So
 {
 }
 
-// Called when the game starts or when spawned
-void AMainPlayerCharacter::BeginPlay()
+// Called to bind functionality to input
+void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::BeginPlay();
-	mState = GetPlayerState<ADefaultPlayerState>();
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
 }
+
+
+//ADefaultPlayerState* AMainPlayerCharacter::GetPlayerState() const
+//{
+//	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
+//	{
+//		return Cast<ADefaultPlayerState>(PC->PlayerState);
+//	}
+//	return nullptr;
+//}
+
 
 // Called every frame
 void AMainPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
 }
 
-// Called to bind functionality to input
-void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AMainPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AMainPlayerCharacter, mState);
 }

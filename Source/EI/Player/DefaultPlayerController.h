@@ -72,14 +72,8 @@ private:
 protected:
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
-	UFUNCTION()
-	void OnSetDestinationStarted();
-	UFUNCTION()
-	void OnSetDestinationTriggered();
-	UFUNCTION()
-	void OnSetDestinationReleased();
 
-	void ProcessDestinationInput();
+	void OnSetDestination();
 
 	void OnAttackClicked();
 	//void OnAttackTriggered();
