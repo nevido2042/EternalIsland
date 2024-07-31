@@ -6,7 +6,18 @@
 
 void ARangedPlayerCharacter::NormalAttack()
 {
-	//PlayAnimMontage(NormalAttackMontage);
+    if (NormalAttackMontage)
+    {
+        MulticastPlayAttackMontage(NormalAttackMontage);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
+    }
+}
+
+void ARangedPlayerCharacter::QSkill()
+{
     if (NormalAttackMontage)
     {
         MulticastPlayAttackMontage(NormalAttackMontage);
@@ -16,5 +27,6 @@ void ARangedPlayerCharacter::NormalAttack()
         UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
     }
 
-	//NormalAttackHitCheck(50.f, 500.f);
+    NormalAttackHitCheck(50.f, 500.f);
+    //GetWorld()->SpawnActor(Projectile);
 }

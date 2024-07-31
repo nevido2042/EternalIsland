@@ -9,6 +9,14 @@
 
 class UNiagaraSystem;
 
+enum class ESkill :uint8
+{
+	NONE,
+	Q,
+	W,
+	E
+};
+
 UCLASS()
 class EI_API ADefaultPlayerController : public APlayerController
 {
@@ -40,8 +48,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SetDestinationClickAction;
 
+	//평타
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SetAttackAction;
+
+	//스킬 발동
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ActiveSkillAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SetFirstSkillAction;
@@ -63,7 +76,8 @@ public:
 		return CachedDestination;
 	}
 
-	FVector GetClickLocation();
+	FVector GetMouseLocation();
+	AActor* GetClickActor();
 
 private:
 	UPROPERTY()
@@ -75,13 +89,19 @@ protected:
 
 	void OnSetDestination();
 
-	void OnAttackClicked();
+	void OnNormalAttackClicked();
+
+	void OnActiveSkillClicked();
 	//void OnAttackTriggered();
 	//void OnAttackReleased();
 
 	void OnFirstSkillClicked();
 	void OnSecondSkillClicked();
 	void OnThirdSkillClicked();
+
+	ESkill SelectSkill = ESkill::NONE;
+	void ActiveSkill(ESkill InSkill);
+
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
@@ -128,6 +148,15 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastNormalAttack(const FVector& ClickLocation);
 	void MulticastNormalAttack_Implementation(const FVector& ClickLocation);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerQSkill(const FVector& ClickLocation);
+	void ServerQSkill_Implementation(const FVector& ClickLocation);
+	bool ServerQSkill_Validate(const FVector& ClickLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastServerQSkill(const FVector& ClickLocation);
+	void MulticastServerQSkill_Implementation(const FVector& ClickLocation);
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
