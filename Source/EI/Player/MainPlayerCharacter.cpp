@@ -89,6 +89,10 @@ void AMainPlayerCharacter::NormalAttack()
 	//NormalAttackHitCheck();
 }
 
+void AMainPlayerCharacter::QSkill()
+{
+}
+
 void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 {
 	FHitResult result;

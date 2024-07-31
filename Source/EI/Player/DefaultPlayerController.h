@@ -9,6 +9,14 @@
 
 class UNiagaraSystem;
 
+enum class ESkill :uint8
+{
+	NONE,
+	Q,
+	W,
+	E
+};
+
 UCLASS()
 class EI_API ADefaultPlayerController : public APlayerController
 {
@@ -83,6 +91,10 @@ protected:
 	void OnSecondSkillClicked();
 	void OnThirdSkillClicked();
 
+	ESkill SelectSkill = ESkill::NONE;
+	void ActiveSkill(ESkill InSkill);
+
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -128,6 +140,15 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastNormalAttack(const FVector& ClickLocation);
 	void MulticastNormalAttack_Implementation(const FVector& ClickLocation);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerQSkill(const FVector& ClickLocation);
+	void ServerQSkill_Implementation(const FVector& ClickLocation);
+	bool ServerQSkill_Validate(const FVector& ClickLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastServerQSkill(const FVector& ClickLocation);
+	void MulticastServerQSkill_Implementation(const FVector& ClickLocation);
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
