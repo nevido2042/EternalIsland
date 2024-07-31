@@ -15,8 +15,13 @@ public class EI : ModuleRules
             "InputCore", 
             "EnhancedInput",
             "UMG",
+            "GameplayTasks",
+            "NavigationSystem",
             "AIModule",
             "Niagara",
+            "LevelSequence",
+            "Networking",
+            "Sockets"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });
