@@ -50,18 +50,12 @@ void ADefaultPlayerController::SetupInputComponent()
 	{
 		// Setup mouse input events
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestination);
-		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestination);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestination);
-		
-		//평타
-		EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnNormalAttackClicked);
 
-		//스킬 발동
-		EnhancedInputComponent->BindAction(ActiveSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnActiveSkillClicked);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestination);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestination);
+
+		EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnAttackClicked);
 		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnAttackTriggered);
-		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnAttackReleased);
-		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Canceled, this, &ADefaultPlayerController::OnAttackReleased);
 	
 		EnhancedInputComponent->BindAction(SetFirstSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnFirstSkillClicked);
 		EnhancedInputComponent->BindAction(SetSecondSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSecondSkillClicked);
@@ -79,13 +73,7 @@ void ADefaultPlayerController::OnInputStarted()
 
 void ADefaultPlayerController::OnSetDestination()
 {
-	if (GetCharacter()->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
-	{
-		return;
-	}
-
-
-	FVector ClickLocation = GetMouseLocation();
+	FVector ClickLocation = GetClickLocation();
 	if (ControlledCharacter)
 	{
 		ControlledCharacter->LookAtMousePos(ClickLocation);
@@ -94,80 +82,34 @@ void ADefaultPlayerController::OnSetDestination()
 	ServerLookAtMousePos(ClickLocation);
 }
 
-void ADefaultPlayerController::OnNormalAttackClicked()
+void ADefaultPlayerController::OnAttackClicked()
 {
-	APawn* MouseHoveredPawn = Cast<APawn>(GetClickActor());
-
-	if (MouseHoveredPawn == GetPawn())
-	{
-		//자기 자신 무시
-		return;
-	}
-
-	if (MouseHoveredPawn)
-	{
-		StopMovement();
-		ServerNormalAttack(GetMouseLocation());
-	}
-}
-
-void ADefaultPlayerController::OnActiveSkillClicked()
-{
-	if (SelectSkill == ESkill::NONE)
-		return;
-
 	StopMovement();
+	UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
+	if (ControlledCharacter)
+	{
+		FVector ClickLocation = GetClickLocation();
+		// 로그 출력: 클릭 위치 확인
+		UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
 
-	ActiveSkill(SelectSkill);
+		ServerNormalAttack(ClickLocation); // 서버에서 공격을 처리하도록 설정
+	}
 }
 
 
 void ADefaultPlayerController::OnFirstSkillClicked()
 {
-	SelectSkill = ESkill::Q;
-	//StopMovement();
+	StopMovement();
 }
 
 void ADefaultPlayerController::OnSecondSkillClicked()
 {
-	SelectSkill = ESkill::W;
-	//StopMovement();
+	StopMovement();
 }
 
 void ADefaultPlayerController::OnThirdSkillClicked()
 {
-	SelectSkill = ESkill::E;
-	//StopMovement();
-}
-
-void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
-{
-	switch (InSkill)
-	{
-	case ESkill::NONE:
-		break;
-	case ESkill::Q:
-	{
-		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
-		if (ControlledCharacter)
-		{
-			FVector ClickLocation = GetMouseLocation();
-			// 로그 출력: 클릭 위치 확인
-			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
-
-			ServerQSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
-		}
-		break;
-	}
-	case ESkill::W:
-		break;
-	case ESkill::E:
-		break;
-	default:
-		break;
-	}
-
-	SelectSkill = ESkill::NONE;
+	StopMovement();
 }
 
 
@@ -266,36 +208,7 @@ void ADefaultPlayerController::MulticastNormalAttack_Implementation(const FVecto
 	}
 }
 
-void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickLocation)
-{
-	UE_LOG(LogTemp, Log, TEXT("ServerQSkill called on server"));
-	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
-	if (ControlledCharacter)
-	{
-		StopMovement();
-		ControlledCharacter->LookAtMousePos(ClickLocation);
-		ControlledCharacter->QSkill();
-		MulticastNormalAttack(ClickLocation);
-	}
-}
-
-bool ADefaultPlayerController::ServerQSkill_Validate(const FVector& ClickLocation)
-{
-	return true;
-}
-
-
-void ADefaultPlayerController::MulticastServerQSkill_Implementation(const FVector& ClickLocation)
-{
-	if (ControlledCharacter)
-	{
-		UE_LOG(LogTemp, Log, TEXT("MulticastQSkill called on client/server"));
-		ControlledCharacter->LookAtMousePos(ClickLocation);
-		//ControlledCharacter->NormalAttack();
-	}
-}
-
-FVector ADefaultPlayerController::GetMouseLocation()
+FVector ADefaultPlayerController::GetClickLocation()
 {
 	FHitResult Hit;
 	bool bHitSuccessful = false;
@@ -311,23 +224,7 @@ FVector ADefaultPlayerController::GetMouseLocation()
 	return FVector::ZeroVector;*/
 }
 
-AActor* ADefaultPlayerController::GetClickActor()
-{
-	FHitResult Hit;
-	bool bHitSuccessful = false;
 
-	// If we hit a surface, cache the location
-	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
-
-	if (bHitSuccessful)
-	{
-		return Hit.GetActor();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
 
 void ADefaultPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
