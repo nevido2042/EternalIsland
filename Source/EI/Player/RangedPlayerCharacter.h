@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MainPlayerCharacter.h"
+#include "Projectile/Projectile.h"
 #include "RangedPlayerCharacter.generated.h"
 
 /**
@@ -18,6 +19,11 @@ protected:
 
 	virtual void NormalAttack() override;
 
+	virtual void QSkill();
+
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* NormalAttackMontage;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AProjectile> Projectile;
 };

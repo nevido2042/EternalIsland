@@ -90,6 +90,10 @@ void AMainPlayerCharacter::NormalAttack()
 	//NormalAttackHitCheck();
 }
 
+void AMainPlayerCharacter::QSkill()
+{
+}
+
 void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 {
 	UE_LOG(LogTemp, Log, TEXT("NormalAttackHitCheck Called"));
