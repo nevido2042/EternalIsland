@@ -48,8 +48,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SetDestinationClickAction;
 
+	//평타
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SetAttackAction;
+
+	//스킬 발동
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ActiveSkillAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SetFirstSkillAction;
@@ -71,7 +76,8 @@ public:
 		return CachedDestination;
 	}
 
-	FVector GetClickLocation();
+	FVector GetMouseLocation();
+	AActor* GetClickActor();
 
 private:
 	UPROPERTY()
@@ -83,7 +89,9 @@ protected:
 
 	void OnSetDestination();
 
-	void OnAttackClicked();
+	void OnNormalAttackClicked();
+
+	void OnActiveSkillClicked();
 	//void OnAttackTriggered();
 	//void OnAttackReleased();
 

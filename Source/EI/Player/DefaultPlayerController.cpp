@@ -51,10 +51,14 @@ void ADefaultPlayerController::SetupInputComponent()
 		// Setup mouse input events
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestination);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestination);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestination);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestination);
-	
-		EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnAttackClicked);
+		
+		//평타
+		EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnNormalAttackClicked);
+
+		//스킬 발동
+		EnhancedInputComponent->BindAction(ActiveSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnActiveSkillClicked);
 		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnAttackTriggered);
 		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnAttackReleased);
 		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Canceled, this, &ADefaultPlayerController::OnAttackReleased);
@@ -75,7 +79,13 @@ void ADefaultPlayerController::OnInputStarted()
 
 void ADefaultPlayerController::OnSetDestination()
 {
-	FVector ClickLocation = GetClickLocation();
+	if (GetCharacter()->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+	{
+		return;
+	}
+
+
+	FVector ClickLocation = GetMouseLocation();
 	if (ControlledCharacter)
 	{
 		ControlledCharacter->LookAtMousePos(ClickLocation);
@@ -84,7 +94,24 @@ void ADefaultPlayerController::OnSetDestination()
 	ServerLookAtMousePos(ClickLocation);
 }
 
-void ADefaultPlayerController::OnAttackClicked()
+void ADefaultPlayerController::OnNormalAttackClicked()
+{
+	APawn* MouseHoveredPawn = Cast<APawn>(GetClickActor());
+
+	if (MouseHoveredPawn == GetPawn())
+	{
+		//자기 자신 무시
+		return;
+	}
+
+	if (MouseHoveredPawn)
+	{
+		StopMovement();
+		ServerNormalAttack(GetMouseLocation());
+	}
+}
+
+void ADefaultPlayerController::OnActiveSkillClicked()
 {
 	if (SelectSkill == ESkill::NONE)
 		return;
@@ -124,7 +151,7 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
 		if (ControlledCharacter)
 		{
-			FVector ClickLocation = GetClickLocation();
+			FVector ClickLocation = GetMouseLocation();
 			// 로그 출력: 클릭 위치 확인
 			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
 
@@ -132,7 +159,6 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 		}
 		break;
 	}
-
 	case ESkill::W:
 		break;
 	case ESkill::E:
@@ -269,7 +295,7 @@ void ADefaultPlayerController::MulticastServerQSkill_Implementation(const FVecto
 	}
 }
 
-FVector ADefaultPlayerController::GetClickLocation()
+FVector ADefaultPlayerController::GetMouseLocation()
 {
 	FHitResult Hit;
 	bool bHitSuccessful = false;
@@ -283,6 +309,24 @@ FVector ADefaultPlayerController::GetClickLocation()
 	}
 
 	return FVector::ZeroVector;*/
+}
+
+AActor* ADefaultPlayerController::GetClickActor()
+{
+	FHitResult Hit;
+	bool bHitSuccessful = false;
+
+	// If we hit a surface, cache the location
+	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+
+	if (bHitSuccessful)
+	{
+		return Hit.GetActor();
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 void ADefaultPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

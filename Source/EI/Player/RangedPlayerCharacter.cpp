@@ -6,7 +6,14 @@
 
 void ARangedPlayerCharacter::NormalAttack()
 {
-	
+    if (NormalAttackMontage)
+    {
+        MulticastPlayAttackMontage(NormalAttackMontage);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
+    }
 }
 
 void ARangedPlayerCharacter::QSkill()
