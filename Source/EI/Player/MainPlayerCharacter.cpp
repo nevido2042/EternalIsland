@@ -9,7 +9,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "EI/Player/DefaultPlayerController.h"
+#include "Player/DefaultPlayerController.h"
+
 
 // Sets default values
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -82,7 +83,7 @@ void AMainPlayerCharacter::BeginPlay()
 	//	}
 	//}
 
-	mState = GetPlayerState<ADefaultPlayerState>();
+//	mState = GetPlayerState<ADefaultPlayerState>();
 
 }
 void AMainPlayerCharacter::NormalAttack()
@@ -133,15 +134,15 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 		return;
 	}
 
-	ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
-	if (!IsValid(targetState))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack - targetState Is Not Valid"));
-		return;
-	}
-
-	targetState->InflictDamage(mState->GetAttackDamage(), result.ImpactNormal);
-	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
+	//ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
+	//if (!IsValid(targetState))
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Attack - targetState Is Not Valid"));
+	//	return;
+	//}
+	//
+	//targetState->InflictDamage(mState->GetAttackDamage(), result.ImpactNormal);
+	//UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
 }
 
 void AMainPlayerCharacter::LookAtMousePos(const FVector& TargetLocation)

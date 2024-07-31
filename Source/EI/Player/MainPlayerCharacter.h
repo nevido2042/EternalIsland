@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "DefaultPlayerState.h"
+#include "GameInfo.h"
 #include "GameFramework/Character.h"
 #include "MainPlayerCharacter.generated.h"
 
