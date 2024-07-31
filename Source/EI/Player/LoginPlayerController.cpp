@@ -22,43 +22,43 @@ void ALoginPlayerController::BeginPlay()
 
 	SetInputMode(InputMode);
 
-	switch (GetWorld()->GetNetMode())
-	{
-	case NM_Standalone:
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-			TEXT("Standalone"));
-		LOG(TEXT("Standalone"));
-		break;
-	case NM_DedicatedServer:
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-			TEXT("DedicatedServer"));
-		LOG(TEXT("DedicatedServer"));
-		break;
-	case NM_ListenServer:
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-			TEXT("ListenServer"));
-		LOG(TEXT("ListenServer"));
-		break;
-	case NM_Client:
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-			TEXT("Client"));
-		LOG(TEXT("Client"));
-		break;
-	}
-
-	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-	{
-		if (IsValid(mLoginUIClass))
-		{
-			mLoginUIWidget = CreateWidget<ULoginWidget>(GetWorld(), mLoginUIClass);
-
-			if (IsValid(mLoginUIWidget))
-			{
-				mLoginUIWidget->AddToViewport();
-				LOG(TEXT("UI Create"));
-			}
-		}
-	}
+	//switch (GetWorld()->GetNetMode())
+	//{
+	//case NM_Standalone:
+	//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//		TEXT("Standalone"));
+	//	LOG(TEXT("Standalone"));
+	//	break;
+	//case NM_DedicatedServer:
+	//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//		TEXT("DedicatedServer"));
+	//	LOG(TEXT("DedicatedServer"));
+	//	break;
+	//case NM_ListenServer:
+	//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//		TEXT("ListenServer"));
+	//	LOG(TEXT("ListenServer"));
+	//	break;
+	//case NM_Client:
+	//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//		TEXT("Client"));
+	//	LOG(TEXT("Client"));
+	//	break;
+	//}
+	//
+	//if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+	//{
+	//	if (IsValid(mLoginUIClass))
+	//	{
+	//		mLoginUIWidget = CreateWidget<ULoginWidget>(GetWorld(), mLoginUIClass);
+	//
+	//		if (IsValid(mLoginUIWidget))
+	//		{
+	//			mLoginUIWidget->AddToViewport();
+	//			LOG(TEXT("UI Create"));
+	//		}
+	//	}
+	//}
 }
 
 void ALoginPlayerController::Tick(float DeltaTime)
