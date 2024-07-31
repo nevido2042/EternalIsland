@@ -4,6 +4,7 @@
 
 #include "GameInfo.h"
 #include "GameFramework/Character.h"
+#include "DefaultPlayerState.h"
 #include "MainPlayerCharacter.generated.h"
 
 UCLASS()
@@ -27,7 +28,7 @@ public:
 		return CameraBoom;
 	}
 
-	class ADefaultPlayerState* GetCharacterState()
+	ADefaultPlayerState* GetCharacterState()
 	{
 		return mState;
 	}

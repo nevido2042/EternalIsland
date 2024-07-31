@@ -86,7 +86,7 @@ void AMainPlayerCharacter::BeginPlay()
 }
 void AMainPlayerCharacter::NormalAttack()
 {
-	NormalAttackHitCheck();
+	//NormalAttackHitCheck();
 }
 
 void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)

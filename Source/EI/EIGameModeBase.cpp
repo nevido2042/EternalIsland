@@ -8,7 +8,7 @@
 AEIGameModeBase::AEIGameModeBase()
 {
 
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MainCharacter.BP_MainCharacter_C'"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_RangedCharacter.BP_RangedCharacter_C'"));
 	if (PlayerPawnBPClass.Succeeded())
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
