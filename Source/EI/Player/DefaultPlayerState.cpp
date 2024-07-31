@@ -20,15 +20,6 @@ void ADefaultPlayerState::InflictDamage(int Amount, FVector ImpactNormal)
 {
 	AddHP(-Amount);
 
-	//쓰레기값을 가져오는 에러
-	UUserWidget* UserWidget = nullptr;// = Cast<ADefaultPlayerController>(GetPlayerController())->GetMainWidget();
-
-	if (UserWidget)
-	{
-		//그런데 이 안으로 들어옴
-		/*UMainWidget* MainWidget = Cast<UMainWidget>(UserWidget);
-		MainWidget->UpdateHPBar((float)mHP / (float)mMaxHP);*/
-	}
 	if (mHP <= 0)
 	{
 		AMainPlayerCharacter* Character = Cast<AMainPlayerCharacter>(GetPlayerController()->GetCharacter());
@@ -38,6 +29,17 @@ void ADefaultPlayerState::InflictDamage(int Amount, FVector ImpactNormal)
 
 void ADefaultPlayerState::OnRep_HP()
 {
+	ADefaultPlayerController* DefaultPlayerController = Cast<ADefaultPlayerController>(GetPlayerController());
+
+	if (!DefaultPlayerController) return;
+
+	UUserWidget* UserWidget = DefaultPlayerController->GetMainWidget();
+
+	if (UserWidget)
+	{
+		UMainWidget* MainWidget = Cast<UMainWidget>(UserWidget);
+		MainWidget->UpdateHPBar((float)GetHP() / (float)GetHPMax());
+	}
 }
 
 void ADefaultPlayerState::OnRep_Level()
