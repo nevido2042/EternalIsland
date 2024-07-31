@@ -202,7 +202,6 @@ void ADefaultPlayerController::MulticastNormalAttack_Implementation(const FVecto
 {
 	if (ControlledCharacter)
 	{
-		UE_LOG(LogTemp, Log, TEXT("MulticastNormalAttack called on client/server"));
 		ControlledCharacter->LookAtMousePos(ClickLocation);
 		//ControlledCharacter->NormalAttack();
 	}
