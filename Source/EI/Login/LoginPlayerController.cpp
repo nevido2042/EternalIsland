@@ -8,7 +8,7 @@ ALoginPlayerController::ALoginPlayerController()
 {
 	bShowMouseCursor = true;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> LoginUIClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Game/LoginMap/UI_Login.UI_Login_C'"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> LoginUIClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Game/UI/UI_Login.UI_Login_C'"));
 
 	if (LoginUIClass.Succeeded())
 		mLoginUIClass = LoginUIClass.Class;
@@ -45,7 +45,7 @@ void ALoginPlayerController::BeginPlay()
 	//	LOG(TEXT("Client"));
 	//	break;
 	//}
-	//
+	
 	//if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
 	//{
 	//	if (IsValid(mLoginUIClass))

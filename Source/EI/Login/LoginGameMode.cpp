@@ -2,7 +2,7 @@
 
 
 #include "LoginGameMode.h"
-#include "Player/LoginPlayerController.h"
+#include "LoginPlayerController.h"
 
 ALoginGameMode::ALoginGameMode()
 {

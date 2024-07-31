@@ -86,6 +86,7 @@ void AMainPlayerCharacter::BeginPlay()
 }
 void AMainPlayerCharacter::NormalAttack()
 {
+	UE_LOG(LogTemp, Log, TEXT("NormalAttack Called"));
 	//NormalAttackHitCheck();
 }
 
@@ -95,6 +96,7 @@ void AMainPlayerCharacter::QSkill()
 
 void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 {
+	UE_LOG(LogTemp, Log, TEXT("NormalAttackHitCheck Called"));
 	FHitResult result;
 	FCollisionQueryParams param(NAME_None, false, this);
 
