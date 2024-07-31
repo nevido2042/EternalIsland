@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/World.h"
+#include "Blueprint/UserWidget.h"
 
 ADefaultPlayerController::ADefaultPlayerController()
 {
@@ -132,6 +133,11 @@ void ADefaultPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 
+	if (MainWidgetAsset)
+	{
+		MainWidget = CreateWidget(GetWorld(), MainWidgetAsset);
+		MainWidget->AddToViewport();
+	}
 }
 
 void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
