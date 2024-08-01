@@ -8,7 +8,7 @@
 
 ALoginPlayerController::ALoginPlayerController()
 {
-	bReplicates = 
+	bReplicates = true;
 	bShowMouseCursor = true;
 	
 	static ConstructorHelpers::FClassFinder<UUserWidget>	LoginUIClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Game/UI/UI_Login.UI_Login_C'"));
@@ -69,9 +69,24 @@ void ALoginPlayerController::BeginPlay()
 			if (IsValid(mLoginUIWidget))
 			{
 				mLoginUIWidget->AddToViewport();
+				GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+					TEXT("!UI Create"));
+				LOG(TEXT("!UI Create"));
 				LOG(TEXT("UI Create"));
 			}
 		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+				TEXT("!mLoginUIWidget"));
+			LOG(TEXT("!mLoginUIWidget"));
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+			TEXT("!NM_Client"));
+		LOG(TEXT("!NM_Client"));
 	}
 }
 

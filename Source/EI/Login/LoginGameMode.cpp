@@ -6,22 +6,27 @@
 
 ALoginGameMode::ALoginGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	PlayerControllerClass = ALoginPlayerController::StaticClass();
 }
 
 void ALoginGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
+	Super::InitGame(MapName, Options, ErrorMessage);
 }
 
 void ALoginGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 경로를 만들어준다.
 	FString	FullPath = FString::Printf(TEXT("%s%s"),
 		*FPaths::ProjectSavedDir(), TEXT("Membership.txt"));
 
+	// 해당 파일이 없을 경우 파일을 만들어준다.
 	if (!IFileManager::Get().FileExists(*FullPath))
 	{
+		// 파일이 없을 경우 회원목록 파일을 만들어준다.
 		FArchive* FileWriter = IFileManager::Get().CreateFileWriter(*FullPath);
 
 		if (FileWriter)
@@ -46,6 +51,7 @@ void ALoginGameMode::BeginPlay()
 
 	for (int32 i = 0; i < Count; ++i)
 	{
+		// 회원 정보를 만들어준다.
 		FJoinInfo	Info;
 		Info.Login = false;
 
@@ -79,7 +85,7 @@ bool ALoginGameMode::JoinMembership(const FText& ID, const FText& Password)
 
 	mJoinInfoMap.Add(NewInfo.ID, NewInfo);
 
-	// ������ ���� ��� ȸ����� ������ ������ش�.
+	// 파일이 없을 경우 회원목록 파일을 만들어준다.
 	FString	FullPath = FString::Printf(TEXT("%s%s"),
 		*FPaths::ProjectSavedDir(), TEXT("Membership.txt"));
 	FArchive* FileWriter = IFileManager::Get().CreateFileWriter(*FullPath);
