@@ -11,7 +11,6 @@ ADefaultPlayerController::ADefaultPlayerController()
 	CachedDestination = FVector::ZeroVector;
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
-
 }
 
 void ADefaultPlayerController::OnPossess(APawn* InPawn)
@@ -20,6 +19,8 @@ void ADefaultPlayerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 	ControlledPawn = InPawn;
 	ControlledCharacter = Cast<AMainPlayerCharacter>(InPawn);
+
+	AttackSpeed = ControlledCharacter->GetAttackSpeed();
 
 	// 초기화 로그
 	if (ControlledCharacter)
@@ -79,6 +80,12 @@ void ADefaultPlayerController::OnInputStarted()
 
 void ADefaultPlayerController::OnSetDestination()
 {
+	FVector ClickLocation = GetMouseLocation();
+	MoveToLocation(ClickLocation);
+}
+
+void ADefaultPlayerController::MoveToLocation(const FVector Location)
+{
 	if (!GetCharacter())
 	{
 		return;
@@ -89,14 +96,13 @@ void ADefaultPlayerController::OnSetDestination()
 		return;
 	}
 
-	FVector ClickLocation = GetMouseLocation();
 	if (ControlledCharacter)
 	{
-		ControlledCharacter->LookAtMousePos(ClickLocation);
+		ControlledCharacter->LookAtMousePos(Location);
 	}
 
-	ServerMoveToLocation(ClickLocation);
-	ServerLookAtMousePos(ClickLocation);
+	ServerMoveToLocation(Location);
+	ServerLookAtMousePos(Location);
 }
 
 void ADefaultPlayerController::OnNormalAttackClicked()
@@ -175,6 +181,11 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 
 void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 {
+	if (!GetPawn())
+	{
+		return;
+	}
+
 	//사거리를 체크해서 추적할지 공격할지 판단
 	float AttackRange;
 	AttackRange = Cast<AMainPlayerCharacter>(GetPawn())->GetAttackRange();
@@ -183,8 +194,9 @@ void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 	if (Dist > AttackRange)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_NormalAttack);
-		ServerLookAtMousePos(InTarget->GetActorLocation());
-		ServerMoveToLocation(InTarget->GetActorLocation());
+
+		MoveToLocation(InTarget->GetActorLocation());
+
 		return;
 	}
 
@@ -193,9 +205,17 @@ void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 		return;
 	}
 
+	//WaitTime = AttackSpeed - (현재시간 - 마지막에 공격했던 시간)
+	float WaitTime = AttackSpeed - (GetWorld()->GetTimeSeconds() - LastAttackTime);
+
+	if (WaitTime < 0.f)
+	{
+		WaitTime = 0.f;
+	}
+
 	FTimerDelegate Delegate;
 	Delegate.BindUFunction(this, "ServerNormalAttack", InTarget);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_NormalAttack, Delegate, 2.f, true, 0.f);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_NormalAttack, Delegate, AttackSpeed, true, WaitTime);
 }
 
 void ADefaultPlayerController::ClearTimer()
@@ -304,6 +324,8 @@ void ADefaultPlayerController::MulticastNormalAttack_Implementation(const FVecto
 		UE_LOG(LogTemp, Log, TEXT("MulticastNormalAttack called on client/server"));
 		ControlledCharacter->LookAtMousePos(ClickLocation);
 		//ControlledCharacter->NormalAttack();
+
+		LastAttackTime = GetWorld()->GetTimeSeconds();
 	}
 }
 

@@ -143,7 +143,8 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 		Radius,												// 캡슐의 반지름
 		CapsuleRot,									// 캡슐의 회전 (기본적으로 회전 없음)
 		FColor::Red,										// 캡슐의 색상
-		false												// 지속적으로 드로우 (true면 지속적으로, false면 한 번만)
+		false,												// 지속적으로 드로우 (true면 지속적으로, false면 한 번만)
+		0.5f
 	);
 
 	AActor* HitActor = result.GetActor();
@@ -163,9 +164,15 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 	//ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
 	ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(targetCharacter->GetPlayerState());
 	ADefaultPlayerState* MyState = Cast<ADefaultPlayerState>(GetPlayerState());
+
 	if (!IsValid(targetState))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attack - targetState Is Not Valid"));
+		return;
+	}
+
+	if (!MyState)
+	{
 		return;
 	}
 

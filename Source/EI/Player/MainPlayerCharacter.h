@@ -38,9 +38,11 @@ public:
 
 protected:
 	float AttackRange = 500.f;
+	float AttackSpeed = 1.f;
 
 public:
 	float GetAttackRange() { return AttackRange; }
+	float GetAttackSpeed() { return AttackSpeed; }
 	
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* NormalAttackMontage;

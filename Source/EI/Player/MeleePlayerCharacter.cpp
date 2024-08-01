@@ -5,7 +5,8 @@
 
 AMeleePlayerCharacter::AMeleePlayerCharacter()
 {
-    AttackRange = 100.f;
+    AttackRange = 200.f;
+    AttackSpeed = 1.f;
 }
 
 void AMeleePlayerCharacter::NormalAttack(const APawn* InTarget)

@@ -7,6 +7,7 @@
 ARangedPlayerCharacter::ARangedPlayerCharacter()
 {
     AttackRange = 500.f;
+    AttackSpeed = 2.f;
 }
 
 void ARangedPlayerCharacter::NormalAttack(const APawn* InTarget)

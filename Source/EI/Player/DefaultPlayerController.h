@@ -89,6 +89,8 @@ protected:
 
 	void OnSetDestination();
 
+	void MoveToLocation(const FVector Location);
+
 	void OnNormalAttackClicked();
 
 	void OnActiveSkillClicked();
@@ -105,6 +107,10 @@ protected:
 	APawn* Target;
 	FTimerHandle TimerHandle_NormalAttack;
 	FTimerHandle TimerHandle_CheckTargetDist;
+
+	double LastAttackTime = -999.f;
+
+	float AttackSpeed = 1.f;
 
 	UFUNCTION()
 	void CheckTargetDist(APawn* InTarget);
