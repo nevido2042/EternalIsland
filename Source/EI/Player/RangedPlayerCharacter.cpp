@@ -4,16 +4,9 @@
 #include "RangedPlayerCharacter.h"
 #include "DefaultPlayerController.h"
 
-void ARangedPlayerCharacter::NormalAttack()
+void ARangedPlayerCharacter::NormalAttack(const APawn* InTarget)
 {
-    if (NormalAttackMontage)
-    {
-        MulticastPlayAttackMontage(NormalAttackMontage);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
-    }
+    Super::NormalAttack(InTarget);
 }
 
 void ARangedPlayerCharacter::QSkill()

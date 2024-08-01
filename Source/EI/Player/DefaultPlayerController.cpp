@@ -79,36 +79,42 @@ void ADefaultPlayerController::OnInputStarted()
 
 void ADefaultPlayerController::OnSetDestination()
 {
-	if (GetCharacter()->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+	if (!GetCharacter())
 	{
 		return;
 	}
 
+	if (GetCharacter()->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+	{
+		return;
+	}
 
 	FVector ClickLocation = GetMouseLocation();
 	if (ControlledCharacter)
 	{
 		ControlledCharacter->LookAtMousePos(ClickLocation);
 	}
+
 	ServerMoveToLocation(ClickLocation);
 	ServerLookAtMousePos(ClickLocation);
 }
 
 void ADefaultPlayerController::OnNormalAttackClicked()
 {
-	APawn* MouseHoveredPawn = Cast<APawn>(GetClickActor());
+	Target = Cast<APawn>(GetClickActor());
 
-	if (MouseHoveredPawn == GetPawn())
+	if (!Target|| Target == GetPawn())
 	{
-		//자기 자신 무시
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_NormalAttack);
 		return;
 	}
 
-	if (MouseHoveredPawn)
-	{
-		StopMovement();
-		ServerNormalAttack(GetMouseLocation());
-	}
+	StopMovement();
+	//ServerNormalAttack(Target->GetActorLocation());
+
+	FTimerDelegate Delegate;
+	Delegate.BindUFunction(this, "ServerNormalAttack", Target);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_NormalAttack, Delegate, 1.f, true, 0.f);
 }
 
 void ADefaultPlayerController::OnActiveSkillClicked()
@@ -236,21 +242,28 @@ void ADefaultPlayerController::MulticastLookAtMousePos_Implementation(const FVec
 
 }
 
-void ADefaultPlayerController::ServerNormalAttack_Implementation(const FVector& ClickLocation)
+void ADefaultPlayerController::ServerNormalAttack_Implementation(const APawn* InTarget)
 {
+	if (!InTarget)
+	{
+		return;
+	}
+
+	const FVector TargetLocation = InTarget->GetTargetLocation();
 
 	UE_LOG(LogTemp, Log, TEXT("ServerNormalAttack called on server"));
-	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
+	UE_LOG(LogTemp, Log, TEXT("TargetLocation on server: %s"), *TargetLocation.ToString());
+
 	if (ControlledCharacter)
 	{
 		StopMovement();
-		ControlledCharacter->LookAtMousePos(ClickLocation);
-		ControlledCharacter->NormalAttack();
-		MulticastNormalAttack(ClickLocation);
+		ControlledCharacter->LookAtMousePos(TargetLocation);
+		ControlledCharacter->NormalAttack(InTarget);
+		MulticastNormalAttack(TargetLocation);
 	}
 }
 
-bool ADefaultPlayerController::ServerNormalAttack_Validate(const FVector& ClickLocation)
+bool ADefaultPlayerController::ServerNormalAttack_Validate(const APawn* InTarget)
 {
 
 	return true;

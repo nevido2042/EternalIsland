@@ -37,7 +37,10 @@ public:
 //	virtual ADefaultPlayerState* GetPlayerState() const;
 
 public:
-	virtual void NormalAttack();
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* NormalAttackMontage;
+
+	virtual void NormalAttack(const APawn* InTarget);
 
 	virtual void QSkill();
 

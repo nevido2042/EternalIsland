@@ -17,12 +17,9 @@ class EI_API ARangedPlayerCharacter : public AMainPlayerCharacter
 
 protected:
 
-	virtual void NormalAttack() override;
+	virtual void NormalAttack(const APawn* InTarget) override;
 
 	virtual void QSkill();
-
-	UPROPERTY(EditAnywhere)
-	UAnimMontage* NormalAttackMontage;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> Projectile;

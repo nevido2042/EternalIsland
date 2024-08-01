@@ -14,8 +14,5 @@ class EI_API AMeleePlayerCharacter : public AMainPlayerCharacter
 {
 	GENERATED_BODY()
 	
-	virtual void NormalAttack() override;
-
-	UPROPERTY(EditAnywhere)
-	UAnimMontage* NormalAttackMontage;
+	virtual void NormalAttack(const APawn* InTarget) override;
 };

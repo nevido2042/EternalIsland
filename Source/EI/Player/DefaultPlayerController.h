@@ -102,13 +102,15 @@ protected:
 	ESkill SelectSkill = ESkill::NONE;
 	void ActiveSkill(ESkill InSkill);
 
+	APawn* Target;
+	FTimerHandle TimerHandle_NormalAttack;
+public:
+	APawn* GetTarget() { return Target; }
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
 	virtual void SetupInputComponent() override;
-
-
 
 	// To add mapping context
 	virtual void BeginPlay() override;
@@ -116,7 +118,6 @@ protected:
 
 private:
 	FVector CachedDestination;
-
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerMoveToLocation(const FVector& DestLocation);
@@ -141,9 +142,9 @@ private:
 	void MulticastLookAtMousePos_Implementation(const FVector& TargetLocation);
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerNormalAttack(const FVector& ClickLocation);
-	void ServerNormalAttack_Implementation(const FVector& ClickLocation);
-	bool ServerNormalAttack_Validate(const FVector& ClickLocation);
+	void ServerNormalAttack(const APawn* InTarget);
+	void ServerNormalAttack_Implementation(const APawn* InTarget);
+	bool ServerNormalAttack_Validate(const APawn* InTarget);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastNormalAttack(const FVector& ClickLocation);
