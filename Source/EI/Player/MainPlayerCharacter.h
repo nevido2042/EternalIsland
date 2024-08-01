@@ -36,7 +36,12 @@ public:
 //public:
 //	virtual ADefaultPlayerState* GetPlayerState() const;
 
+protected:
+	float AttackRange = 500.f;
+
 public:
+	float GetAttackRange() { return AttackRange; }
+	
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* NormalAttackMontage;
 

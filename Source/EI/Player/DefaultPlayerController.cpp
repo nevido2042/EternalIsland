@@ -105,16 +105,13 @@ void ADefaultPlayerController::OnNormalAttackClicked()
 
 	if (!Target|| Target == GetPawn())
 	{
-		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_NormalAttack);
+		ClearTimer();
 		return;
 	}
 
-	StopMovement();
-	//ServerNormalAttack(Target->GetActorLocation());
-
 	FTimerDelegate Delegate;
-	Delegate.BindUFunction(this, "ServerNormalAttack", Target);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_NormalAttack, Delegate, 1.f, true, 0.f);
+	Delegate.BindUFunction(this, "CheckTargetDist", Target);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_CheckTargetDist, Delegate, 0.1f, true, 0.f);
 }
 
 void ADefaultPlayerController::OnActiveSkillClicked()
@@ -174,6 +171,37 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 	}
 
 	SelectSkill = ESkill::NONE;
+}
+
+void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
+{
+	//사거리를 체크해서 추적할지 공격할지 판단
+	float AttackRange;
+	AttackRange = Cast<AMainPlayerCharacter>(GetPawn())->GetAttackRange();
+
+	float Dist = FVector::Dist(GetPawn()->GetActorLocation(), InTarget->GetActorLocation());
+	if (Dist > AttackRange)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_NormalAttack);
+		ServerLookAtMousePos(InTarget->GetActorLocation());
+		ServerMoveToLocation(InTarget->GetActorLocation());
+		return;
+	}
+
+	if (GetWorld()->GetTimerManager().TimerExists(TimerHandle_NormalAttack))
+	{
+		return;
+	}
+
+	FTimerDelegate Delegate;
+	Delegate.BindUFunction(this, "ServerNormalAttack", InTarget);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_NormalAttack, Delegate, 2.f, true, 0.f);
+}
+
+void ADefaultPlayerController::ClearTimer()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_NormalAttack);
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_CheckTargetDist);
 }
 
 

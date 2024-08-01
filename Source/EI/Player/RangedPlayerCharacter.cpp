@@ -4,6 +4,11 @@
 #include "RangedPlayerCharacter.h"
 #include "DefaultPlayerController.h"
 
+ARangedPlayerCharacter::ARangedPlayerCharacter()
+{
+    AttackRange = 500.f;
+}
+
 void ARangedPlayerCharacter::NormalAttack(const APawn* InTarget)
 {
     Super::NormalAttack(InTarget);

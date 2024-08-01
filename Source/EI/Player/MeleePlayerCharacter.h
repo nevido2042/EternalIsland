@@ -14,5 +14,9 @@ class EI_API AMeleePlayerCharacter : public AMainPlayerCharacter
 {
 	GENERATED_BODY()
 	
+	AMeleePlayerCharacter();
+
 	virtual void NormalAttack(const APawn* InTarget) override;
+
+	virtual void QSkill();
 };

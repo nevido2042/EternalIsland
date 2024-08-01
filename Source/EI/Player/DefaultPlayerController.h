@@ -104,8 +104,14 @@ protected:
 
 	APawn* Target;
 	FTimerHandle TimerHandle_NormalAttack;
+	FTimerHandle TimerHandle_CheckTargetDist;
+
+	UFUNCTION()
+	void CheckTargetDist(APawn* InTarget);
+
 public:
 	APawn* GetTarget() { return Target; }
+	void ClearTimer();
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
