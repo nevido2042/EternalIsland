@@ -28,9 +28,19 @@
 #include "UObject/NoExportTypes.h"
 #include "GameInfo.generated.h"
 
-/**
- * 
- */
+DECLARE_LOG_CATEGORY_EXTERN(EI, Log, All);
+
+#define LOG_CALLINFO (FString(__FUNCTION__) + TEXT("[") + FString::FromInt(__LINE__) + TEXT("]"))
+
+// %s : 문자열을 받아서 그 문자열을 채워준다.
+// %s는 FString을 바로 주면 안 된다. 앞에 *를 붙여서 FString의 주소를 넘기면
+// 있는 문자열 주소를 따라가 문자열 자체를 넘겨주면 된다.
+// %d : 정수를 받아서 그 자리에 정수를 문자열로 변환하여 채워준다.
+// %f : 실수를 받아서 그 자리에 실수를 문자열로 변환하여 채워준다.
+#define LOG(Format, ...) UE_LOG(EI, Warning, TEXT("%s : %s"), *LOG_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
+
+#define LOGSTRING(str) UE_LOG(EI, Warning, TEXT("%s : %s"), *LOG_CALLINFO, *str)
+
 UCLASS()
 class EI_API UGameInfo : public UObject
 {
