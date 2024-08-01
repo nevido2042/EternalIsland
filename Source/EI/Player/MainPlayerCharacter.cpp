@@ -84,10 +84,32 @@ void AMainPlayerCharacter::BeginPlay()
 
 	mState = GetPlayerState<ADefaultPlayerState>();
 }
-void AMainPlayerCharacter::NormalAttack()
+void AMainPlayerCharacter::NormalAttack(const APawn* InTarget)
 {
+	if (!InTarget)
+	{
+		return;
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("NormalAttack Called"));
-	//NormalAttackHitCheck();
+
+	if (NormalAttackMontage)
+	{
+		MulticastPlayAttackMontage(NormalAttackMontage);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
+	}
+
+	ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(InTarget->GetPlayerState());
+	ADefaultPlayerState* MyState = Cast<ADefaultPlayerState>(GetPlayerState());
+
+	if (!targetState || !MyState)
+	{
+		return;
+	}
+	targetState->InflictDamage(MyState->GetAttackDamage(), InTarget->GetActorLocation());
 }
 
 void AMainPlayerCharacter::QSkill()
