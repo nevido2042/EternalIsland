@@ -17,6 +17,8 @@ class EI_API ARangedPlayerCharacter : public AMainPlayerCharacter
 
 protected:
 
+	ARangedPlayerCharacter();
+
 	virtual void NormalAttack(const APawn* InTarget) override;
 
 	virtual void QSkill();

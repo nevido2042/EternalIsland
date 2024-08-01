@@ -22,6 +22,8 @@ void ADefaultPlayerState::InflictDamage(int Amount, FVector ImpactNormal)
 
 	if (mHP <= 0)
 	{
+		Cast<ADefaultPlayerController>(GetPlayerController())->ClearTimer();
+
 		AMainPlayerCharacter* Character = Cast<AMainPlayerCharacter>(GetPlayerController()->GetCharacter());
 		Character->Destroy();
 	}
