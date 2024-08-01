@@ -2,16 +2,30 @@
 
 
 #include "LoginPlayerController.h"
+#include "LoginGameMode.h"
 #include "UI/LoginWidget.h"
+#include "UI/JoinWidget.h"
 
 ALoginPlayerController::ALoginPlayerController()
 {
+	bReplicates = 
 	bShowMouseCursor = true;
-
-	static ConstructorHelpers::FClassFinder<UUserWidget> LoginUIClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Game/UI/UI_Login.UI_Login_C'"));
-
+	
+	static ConstructorHelpers::FClassFinder<UUserWidget>	LoginUIClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Game/UI/UI_Login.UI_Login_C'"));
+	
 	if (LoginUIClass.Succeeded())
 		mLoginUIClass = LoginUIClass.Class;
+
+	mLoginSuccess = false;
+	mJoinSuccess = false;
+}
+
+void ALoginPlayerController::OnRep_LoginSuccess()
+{
+}
+
+void ALoginPlayerController::OnRep_JoinSuccess()
+{
 }
 
 void ALoginPlayerController::BeginPlay()
@@ -66,8 +80,63 @@ void ALoginPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ALoginPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-void ALoginPlayerController::SendLoginInfo_Implementation(const FText& DI,
+	DOREPLIFETIME(ALoginPlayerController, mLoginSuccess);
+}
+
+
+void ALoginPlayerController::SendLoginInfo_Implementation(const FText& ID,
 	const FText& Password)
 {
+	ALoginGameMode* GameMode = GetWorld()->GetAuthGameMode<ALoginGameMode>();
+
+	if (GameMode)
+		mLoginSuccess = GameMode->LoginMember(ID, Password);
+	
+	SendClient(mLoginSuccess, ID.ToString());
+}
+
+void ALoginPlayerController::SendClient_Implementation(bool LoginSuccess, const FString& ID)
+{
+	if (LoginSuccess)
+	{
+		FString	Option = FString::Printf(TEXT("ID=%s"), *ID);
+
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.166:10001"));
+	}
+
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+			TEXT("Login Failed"));
+		LOG(TEXT("Login Failed"));
+	}
+}
+
+void ALoginPlayerController::SendJoinInfo_Implementation(const FText& ID,
+	const FText& Password)
+{
+	// 같은 ID가 회원 목록에 있는지 판단.
+	ALoginGameMode* GameMode = GetWorld()->GetAuthGameMode<ALoginGameMode>();
+
+	if (GameMode)
+	{
+		mJoinSuccess = GameMode->JoinMembership(ID, Password);
+	}
+
+	SendJoinClient(mJoinSuccess);
+}
+
+void ALoginPlayerController::SendJoinClient_Implementation(bool JoinSuccess)
+{
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+	{
+		if (IsValid(mLoginUIWidget))
+		{
+			mLoginUIWidget->GetJoinWidget()->JoinComplete(JoinSuccess);
+		}
+	}
 }

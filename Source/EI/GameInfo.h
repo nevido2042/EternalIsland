@@ -41,6 +41,17 @@ DECLARE_LOG_CATEGORY_EXTERN(EI, Log, All);
 
 #define LOGSTRING(str) UE_LOG(EI, Warning, TEXT("%s : %s"), *LOG_CALLINFO, *str)
 
+USTRUCT()
+struct FJoinInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FString		ID;
+	FString		Password;
+	bool		Login;
+};
+
 UCLASS()
 class EI_API UGameInfo : public UObject
 {

@@ -7,9 +7,118 @@
 ALoginGameMode::ALoginGameMode()
 {
 	PlayerControllerClass = ALoginPlayerController::StaticClass();
-	
+}
+
+void ALoginGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
 }
 
 void ALoginGameMode::BeginPlay()
 {
+	Super::BeginPlay();
+
+	FString	FullPath = FString::Printf(TEXT("%s%s"),
+		*FPaths::ProjectSavedDir(), TEXT("Membership.txt"));
+
+	if (!IFileManager::Get().FileExists(*FullPath))
+	{
+		FArchive* FileWriter = IFileManager::Get().CreateFileWriter(*FullPath);
+
+		if (FileWriter)
+		{
+			int32	Member = 0;
+
+			*FileWriter << Member;
+
+			FileWriter->Close();
+			delete FileWriter;
+		}
+	}
+
+	FArchive* FileReader = IFileManager::Get().CreateFileReader(*FullPath);
+
+	if (!FileReader)
+		return;
+
+	int32	Count = 0;
+
+	*FileReader << Count;
+
+	for (int32 i = 0; i < Count; ++i)
+	{
+		FJoinInfo	Info;
+		Info.Login = false;
+
+		*FileReader << Info.ID;
+		*FileReader << Info.Password;
+
+
+		mJoinInfoMap.Add(Info.ID, Info);
+	}
+
+
+	FileReader->Close();
+	delete FileReader;
+}
+void ALoginGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+bool ALoginGameMode::JoinMembership(const FText& ID, const FText& Password)
+{
+	const FJoinInfo* Info = FindMemberInfo(ID.ToString());
+
+	if(Info)
+		return false;
+
+	FJoinInfo	NewInfo;
+	NewInfo.Login = false;
+	NewInfo.ID = ID.ToString();
+	NewInfo.Password = Password.ToString();
+
+	mJoinInfoMap.Add(NewInfo.ID, NewInfo);
+
+	// ������ ���� ��� ȸ����� ������ ������ش�.
+	FString	FullPath = FString::Printf(TEXT("%s%s"),
+		*FPaths::ProjectSavedDir(), TEXT("Membership.txt"));
+	FArchive* FileWriter = IFileManager::Get().CreateFileWriter(*FullPath);
+
+	if (FileWriter)
+	{
+		int32	Member = mJoinInfoMap.Num();
+
+		*FileWriter << Member;
+
+		for (auto iter = mJoinInfoMap.CreateIterator(); iter; ++iter)
+		{
+			*FileWriter << iter->Value.ID;
+			*FileWriter << iter->Value.Password;
+		}
+
+		FileWriter->Close();
+		delete FileWriter;
+	}
+
+	return true;
+}
+
+bool ALoginGameMode::LoginMember(const FText& ID, const FText& Password)
+{
+	FJoinInfo* Info = FindMemberInfo(ID.ToString());
+
+	if (!Info)
+		return false;
+
+	else if (Info->Password != Password.ToString() || Info->Login)
+		return false;
+
+	Info->Login = true;
+
+	return true;
+}
+
+FJoinInfo* ALoginGameMode::FindMemberInfo(const FString& ID)
+{
+	return mJoinInfoMap.Find(ID);
 }
