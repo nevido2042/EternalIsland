@@ -118,6 +118,10 @@ void ADefaultPlayerController::OnNormalAttackClicked()
 	FTimerDelegate Delegate;
 	Delegate.BindUFunction(this, "CheckTargetDist", Target);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_CheckTargetDist, Delegate, 0.1f, true, 0.f);
+
+	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+		TEXT("OnNormalAttackClicked"));
+	LOG(TEXT("OnNormalAttackClicked"));
 }
 
 void ADefaultPlayerController::OnActiveSkillClicked()
@@ -216,6 +220,10 @@ void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 	FTimerDelegate Delegate;
 	Delegate.BindUFunction(this, "ServerNormalAttack", InTarget);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_NormalAttack, Delegate, AttackSpeed, true, WaitTime);
+
+	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+		TEXT("CheckTargetDist"));
+	LOG(TEXT("CheckTargetDist"));
 }
 
 void ADefaultPlayerController::ClearTimer()
@@ -254,6 +262,9 @@ void ADefaultPlayerController::ServerMoveToLocation_Implementation(const FVector
 {
 	MulticastMoveToLocation(DestLocation);
 	MulticastSpawnFX(DestLocation);
+	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+		TEXT("ServerMoveToLocation"));
+	LOG(TEXT("ServerMoveToLocation"));
 }
 
 bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& DestLocation)
@@ -264,6 +275,10 @@ bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& Dest
 void ADefaultPlayerController::MulticastMoveToLocation_Implementation(const FVector& DestLocation)
 {
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+
+	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+		TEXT("MulticastMoveToLocation"));
+	LOG(TEXT("MulticastMoveToLocation"));
 }
 
 void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Location)
