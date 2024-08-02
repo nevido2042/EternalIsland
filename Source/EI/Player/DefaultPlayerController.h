@@ -131,14 +131,14 @@ protected:
 private:
 	FVector CachedDestination;
 
-	UFUNCTION(Server, Reliable, WithValidation)
+	UFUNCTION(Server, UnReliable, WithValidation)
 	void ServerMoveToLocation(const FVector& DestLocation);
 	void ServerMoveToLocation_Implementation(const FVector& DestLocation);
 	bool ServerMoveToLocation_Validate(const FVector& DestLocation);
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, UnReliable)
 	void MulticastMoveToLocation(const FVector& DestLocation);
-	void MulticastMoveToLocation_Implementation(const FVector& DestLocation);
+	void MulticastMoveToLocation_Implementation(const FVector& DestLocation);	
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSpawnFX(const FVector& Location);
@@ -152,6 +152,7 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastLookAtMousePos(const FVector& TargetLocation);
 	void MulticastLookAtMousePos_Implementation(const FVector& TargetLocation);
+
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerNormalAttack(const APawn* InTarget);
