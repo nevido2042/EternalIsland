@@ -6,6 +6,13 @@
 #include "GameFramework/Pawn.h"
 #include "CreepBase.generated.h"
 
+enum class EState :uint8
+{
+	Wander,
+	Trace,
+	Attack
+};
+
 UCLASS()
 class EI_API ACreepBase : public APawn
 {
@@ -15,15 +22,24 @@ public:
 	// Sets default values for this pawn's properties
 	ACreepBase();
 
+	EState State;
+	void ChangeState(EState InState);
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UFUNCTION(Server, UnReliable)
+	void MoveToRandomLocation();
+	void MoveToRandomLocation_Implementation();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(NetMulticast, UnReliable)
+	void MultiMoveToRandomLocation();
+	void MultiMoveToRandomLocation_Implementation();
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FVector GetRandomLocationInRadius(float Radius);
+
+	APawn* Target = nullptr;
+	TArray<FOverlapResult> OutOverlaps;
+
+	UFUNCTION()
+	void CheckSurroundingWithSphere(UWorld* World, float Radius, TArray<FOverlapResult>& InOutOverlaps, TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes);
 };
