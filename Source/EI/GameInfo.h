@@ -13,6 +13,8 @@
 #include "InputMappingContext.h"
 #include "AIController.h"
 
+#include "NavigationSystem.h"
+
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
 
@@ -52,9 +54,32 @@ public:
 	bool		Login;
 };
 
+UENUM()
+enum class EServerType : uint32
+{
+	Login,
+	TestMap
+};
+
+
+enum class EPacketHeader
+{
+	SessionType,
+
+	// Unreal -> Relay
+	PlayerInfo_Send,
+
+	// Relay -> Unreal
+	PlayerInfo_Receive,
+
+	// Level Transition
+	LevelTransition
+};
+
 UCLASS()
 class EI_API UGameInfo : public UObject
 {
 	GENERATED_BODY()
 	
 };
+

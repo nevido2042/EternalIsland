@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "NavigationSystem.h"
 #include "EI/Player/DefaultPlayerController.h"
 
 // Sets default values
@@ -221,6 +222,12 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 }
 
+void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
+{
+	Destination = Location;
+	bMoveToDestination = true;
+}
+
 
 //ADefaultPlayerState* AMainPlayerCharacter::GetPlayerState() const
 //{
@@ -237,12 +244,30 @@ void AMainPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bMoveToDestination)
+	{
+		FVector CurrentLocation = GetActorLocation();
+		float Distance = FVector::Dist(CurrentLocation, Destination);
+
+		if (Distance > 100.0f) // Close enough to stop
+		{
+			FVector Direction = (Destination - CurrentLocation).GetSafeNormal();
+			AddMovementInput(Direction, 1.0f);
+		}
+		else
+		{
+			bMoveToDestination = false;
+		}
+	}
 
 }
 
 void AMainPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMainPlayerCharacter, Destination);
+	DOREPLIFETIME(AMainPlayerCharacter, bMoveToDestination);
 
 	DOREPLIFETIME(AMainPlayerCharacter, mState);
 }
