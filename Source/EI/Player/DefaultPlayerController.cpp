@@ -82,7 +82,6 @@ void ADefaultPlayerController::OnSetDestination()
 {
 	FVector ClickLocation = GetMouseLocation();
 	MoveToLocation(ClickLocation);
-	SpawnFX(ClickLocation);
 }
 
 void ADefaultPlayerController::MoveToLocation(const FVector Location)
@@ -102,8 +101,14 @@ void ADefaultPlayerController::MoveToLocation(const FVector Location)
 		ControlledCharacter->LookAtMousePos(Location);
 	}
 
-	ServerMoveToLocation(Location);
-	ServerLookAtMousePos(Location);
+	if (HasAuthority())
+	{
+		ServerMoveToLocation(Location);
+	}
+	else
+	{
+		ServerMoveToLocation(Location);
+	}
 }
 
 void ADefaultPlayerController::OnNormalAttackClicked()
@@ -252,8 +257,6 @@ void ADefaultPlayerController::BeginPlay()
 		MainWidget = CreateWidget(GetWorld(), MainWidgetAsset);
 		MainWidget->AddToViewport();
 	}
-
-	//GEngine->SetMaxFPS(10);
 }
 
 void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -262,15 +265,21 @@ void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 void ADefaultPlayerController::ServerMoveToLocation_Implementation(const FVector& DestLocation)
-{
+{	//
 	//MulticastMoveToLocation(DestLocation);
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
-
 	//MulticastSpawnFX(DestLocation);
+	//GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//	TEXT("ServerMoveToLocation"));
+	//LOG(TEXT("ServerMoveToLocation"));
+	AMainPlayerCharacter* MyCharacter = Cast<AMainPlayerCharacter>(GetPawn());
+	if (MyCharacter)
+	{
+		// 서버에서 캐릭터 이동을 처리
+		MyCharacter->MoveToLocation(DestLocation);
 
-	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-		TEXT("ServerMoveToLocation"));
-	LOG(TEXT("ServerMoveToLocation"));
+		// 모든 클라이언트에게 이동 명령 브로드캐스트
+		MulticastMoveToLocation(DestLocation);
+	}
 }
 
 bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& DestLocation)
@@ -278,21 +287,25 @@ bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& Dest
 	return true;
 }
 
-//void ADefaultPlayerController::MulticastMoveToLocation_Implementation(const FVector& DestLocation)
-//{
-//	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
-//
-//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-//		TEXT("MulticastMoveToLocation"));
-//	LOG(TEXT("MulticastMoveToLocation"));
-//}
+void ADefaultPlayerController::MulticastMoveToLocation_Implementation(const FVector& DestLocation)
+{
+	//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+	//
+	//GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//	TEXT("MulticastMoveToLocation"));
+	//LOG(TEXT("MulticastMoveToLocation"));
+	AMainPlayerCharacter* MyCharacter = Cast<AMainPlayerCharacter>(GetPawn());
+	if (MyCharacter)
+	{
+		// 서버는 이미 이동을 처리했으므로 클라이언트만 처리
+		if (!HasAuthority())
+		{
+			MyCharacter->MoveToLocation(DestLocation);
+		}
+	}
+}
 
-//void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Location)
-//{
-//	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, Location, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-//}
-
-void ADefaultPlayerController::SpawnFX(const FVector& Location)
+void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Location)
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, Location, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 }
