@@ -6,12 +6,21 @@
 #include "GameFramework/Actor.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "AIController.h"
+#include "Player/DefaultPlayerController.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ACreepBase::ACreepBase()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	SetRootComponent(CapsuleComponent);
+
+	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	SkeletalMeshComponent->SetupAttachment(CapsuleComponent);
+
 
 }
 
@@ -32,77 +41,46 @@ void ACreepBase::ChangeState(EState InState)
 		FTimerDelegate CheckDelegate;
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
-		CheckDelegate.BindUFunction(this, "CheckSurroundingWithSphere", GetWorld(), 1000.f, OutOverlaps, ObjectTypes);
+		CheckDelegate.BindUFunction(this, "CheckSurroundingWithSphere", GetWorld(), 500.f, /*OutOverlaps,*/ ObjectTypes);
 		GetWorldTimerManager().SetTimer(CheckTimer, CheckDelegate, 1.f, true);
 
 		break;
 	}
-		
 	case EState::Trace:
 	{
+		FTimerHandle FollowTimer;
+		GetWorldTimerManager().SetTimer(FollowTimer, this, &ACreepBase::FollowTarget, 1.f, true);
 
 		break;
 	}
 	case EState::Attack:
+	{
+		SkeletalMeshComponent->GetAnimInstance()->Montage_Play(AttackMontage);
+		ChangeState(EState::Trace);
 		break;
+	}
 	default:
 		break;
 	}
 }
 
-//void ACreepBase::BeginPlay()
-//{
-//	Super::BeginPlay();
-//	MovePawnToRandomLocation(this);
-//}
-
 void ACreepBase::MovePawnToRandomLocation()
 {
-    if (HasAuthority()) // 서버에서만 실행
+	if (!HasAuthority())  return;// 서버에서만 실행
+    
+    UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (!NavSystem) return;
+    
+    FNavLocation RandomLocation;
+    if (NavSystem->GetRandomReachablePointInRadius(GetActorLocation(), 500.0f, RandomLocation))
     {
-        UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-        if (NavSystem)
+        AAIController* AIController = Cast<AAIController>(GetController());
+        if (AIController)
         {
-            FNavLocation RandomLocation;
-            if (NavSystem->GetRandomReachablePointInRadius(GetActorLocation(), 1000.0f, RandomLocation))
-            {
-                AAIController* AIController = Cast<AAIController>(GetController());
-                if (AIController)
-                {
-                    AIController->MoveToLocation(RandomLocation);
-                    //Pawn->ReplicateMovement(); // 클라이언트와 동기화
-                }
-            }
+            AIController->MoveToLocation(RandomLocation);
         }
     }
 }
-
-//void ACreepBase::MoveToRandomLocation()
-//{
-//	FVector RandomLocation = GetRandomLocationInRadius(100.0f); // 1000 유닛 반경 내 랜덤 위치
-//	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), RandomLocation);
-//}
-//
-//void ACreepBase::ServerMoveToRandomLocation_Implementation()
-//{
-//	MoveToRandomLocation();
-//}
-//
-//bool ACreepBase::ServerMoveToRandomLocation_Validate()
-//{
-//	return true;
-//}
-
-//void ACreepBase::MoveToRandomLocation_Implementation()
-//{
-//	MultiMoveToRandomLocation();
-//}
-//
-//void ACreepBase::MultiMoveToRandomLocation_Implementation()
-//{
-//	FVector RandomLocation = GetRandomLocationInRadius(1000.0f); // 1000 유닛 반경 내 랜덤 위치
-//	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), RandomLocation);
-//}
 
 FVector ACreepBase::GetRandomLocationInRadius(float Radius)
 {
@@ -118,7 +96,7 @@ FVector ACreepBase::GetRandomLocationInRadius(float Radius)
 	return FVector::ZeroVector;
 }
 
-void ACreepBase::CheckSurroundingWithSphere(UWorld* World, float Radius, TArray<FOverlapResult>& InOutOverlaps, TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes)
+void ACreepBase::CheckSurroundingWithSphere(UWorld* World, float Radius/*, TArray<FOverlapResult>& InOutOverlaps*/, TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes)
 {
 	// 오버랩 쿼리 파라미터 설정
 	FCollisionQueryParams QueryParams;
@@ -132,10 +110,64 @@ void ACreepBase::CheckSurroundingWithSphere(UWorld* World, float Radius, TArray<
 	World->OverlapMultiByObjectType(OverlapResults, GetActorLocation(), FQuat::Identity, FCollisionObjectQueryParams(ObjectTypes), FCollisionShape::MakeSphere(Radius), QueryParams);
 
 	// 결과를 OutOverlaps에 복사
-	InOutOverlaps = OverlapResults;
+	/*InOutOverlaps = OverlapResults;*/
 
 	// 디버그용으로 스피어를 그려서 결과를 시각적으로 확인
 	DrawDebugSphere(World, GetActorLocation(), Radius, 12, FColor::Green, false, 1.0f);
 
 	UE_LOG(LogTemp, Warning, TEXT("%d"), OverlapResults.Num());
+
+	AActor* ClosestActor = CalculateClosestActor(OverlapResults);
+	if (ClosestActor)
+	{
+		SetTarget(ClosestActor);
+	}
+}
+
+AActor* ACreepBase::CalculateClosestActor(TArray<FOverlapResult>& InOverlapResults)
+{
+	for (const FOverlapResult& Result : InOverlapResults)
+	{
+		AActor* OverlappingActor = Result.GetActor();
+		if (OverlappingActor)
+		{
+			return OverlappingActor;
+		}
+	}
+	return nullptr;
+}
+
+void ACreepBase::SetTarget(AActor* InActor)
+{
+	Target = InActor;
+
+	ChangeState(EState::Trace);
+}
+
+void ACreepBase::FollowTarget()
+{
+	if (MaxTraceDist < CheckTargetDist())
+	{
+		LostTarget();
+	}
+	else if (AttackRange > CheckTargetDist())
+	{
+		ChangeState(EState::Attack);
+	}
+
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController)
+	{
+		AIController->MoveToActor(Target);
+	}
+}
+
+float ACreepBase::CheckTargetDist()
+{
+	return FVector::Dist(Target->GetActorLocation(), GetActorLocation());
+}
+
+void ACreepBase::LostTarget()
+{
+	ChangeState(EState::Wander);
 }

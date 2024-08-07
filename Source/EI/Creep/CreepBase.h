@@ -19,32 +19,39 @@ class EI_API ACreepBase : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	ACreepBase();
 
 	EState State;
 	void ChangeState(EState InState);
 
-	//virtual void BeginPlay() override;
+protected:
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent* SkeletalMeshComponent = nullptr;
 
+	UPROPERTY(EditAnywhere)
+	class UCapsuleComponent* CapsuleComponent = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* AttackMontage = nullptr;
 protected:
 	void MovePawnToRandomLocation();
-protected:
-	//void MoveToRandomLocation();
-	////void MoveToRandomLocation_Implementation();
-	//UFUNCTION(Server, Reliable, WithValidation)
-	//void ServerMoveToRandomLocation();
-	//bool ServerMoveToRandomLocation_Validate();
-
-	//UFUNCTION(NetMulticast, UnReliable)
-	//void MultiMoveToRandomLocation();
-	//void MultiMoveToRandomLocation_Implementation();
-
 	FVector GetRandomLocationInRadius(float Radius);
 
-	APawn* Target = nullptr;
-	TArray<FOverlapResult> OutOverlaps;
+	AActor* Target = nullptr;
+	//TArray<FOverlapResult> OutOverlaps;
 
 	UFUNCTION()
-	void CheckSurroundingWithSphere(UWorld* World, float Radius, TArray<FOverlapResult>& InOutOverlaps, TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes);
+	void CheckSurroundingWithSphere(UWorld* World, float Radius, /*TArray<FOverlapResult>& InOutOverlaps,*/ TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes);
+
+	AActor* CalculateClosestActor(TArray<FOverlapResult>& InOverlapResults);
+
+	void SetTarget(AActor* InActor);
+
+	void FollowTarget();
+
+	float MaxTraceDist = 800.f;
+	float CheckTargetDist();
+	void LostTarget();
+
+	float AttackRange = 100.f;
 };
