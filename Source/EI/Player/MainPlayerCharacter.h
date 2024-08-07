@@ -88,13 +88,31 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	//UPROPERTY(Replicated)
+	//FVector Destination;
+	//
+	//UPROPERTY(Replicated) // 이 부분을 추가
+	//bool bMoveToDestination;
+	//
+	////UNavigationPath* NavPath;
+	//UPROPERTY()
+	//UNavigationPath* NavPath;
 	UPROPERTY(Replicated)
 	FVector Destination;
 
-	UPROPERTY(Replicated) // 이 부분을 추가
+	UPROPERTY(Replicated)
 	bool bMoveToDestination;
+
+	UPROPERTY(ReplicatedUsing = OnRep_PathPoints)
+	TArray<FVector> PathPoints;
+
+
 
 	void MoveToLocation(const FVector& Location);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+protected:
+	UFUNCTION()
+	void OnRep_PathPoints();
 };

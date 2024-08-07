@@ -14,6 +14,7 @@
 #include "AIController.h"
 
 #include "NavigationSystem.h"
+#include "AI/NavigationSystemBase.h"
 
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"

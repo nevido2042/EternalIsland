@@ -8,8 +8,10 @@
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "NavigationSystem.h"
+#include "NavigationPath.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "DrawDebugHelpers.h"
 #include "EI/Player/DefaultPlayerController.h"
 
 // Sets default values
@@ -224,10 +226,45 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
 {
-	Destination = Location;
-	bMoveToDestination = true;
+	//Destination = Location;
+	//bMoveToDestination = true;
+	
+	
+	//if (UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld()))
+	//{
+	//	NavPath = NavSystem->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), Location);
+	//
+	//	if (NavPath && NavPath->PathPoints.Num() > 0)
+	//	{
+	//		bMoveToDestination = true;
+	//		Destination = Location;
+	//	}
+	//}
+
+	if (HasAuthority()) // 서버에서만 경로를 계산
+	{
+		if (UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld()))
+		{
+			UNavigationPath* NavPath = NavSystem->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), Location);
+
+			if (NavPath && NavPath->PathPoints.Num() > 0)
+			{
+				PathPoints = NavPath->PathPoints; // 경로 점들을 저장
+				bMoveToDestination = true;
+				Destination = Location;
+
+				// 클라이언트에 경로 점들을 동기화
+				OnRep_PathPoints();
+			}
+		}
+	}
 }
 
+void AMainPlayerCharacter::OnRep_PathPoints()
+{
+	// 클라이언트에서 경로를 따라 이동 시작
+	bMoveToDestination = true;
+}
 
 //ADefaultPlayerState* AMainPlayerCharacter::GetPlayerState() const
 //{
@@ -244,22 +281,87 @@ void AMainPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bMoveToDestination)
+	//if (bMoveToDestination)
+	//{
+	//	FVector CurrentLocation = GetActorLocation();
+	//	float Distance = FVector::Dist(CurrentLocation, Destination);
+	//
+	//	if (Distance > 100.0f) // Close enough to stop
+	//	{
+	//		FVector Direction = (Destination - CurrentLocation).GetSafeNormal();
+	//		AddMovementInput(Direction, 1.0f);
+	//	}
+	//	else
+	//	{
+	//		bMoveToDestination = false;
+	//	}
+	//}
+	 
+	 
+	//if (bMoveToDestination && NavPath && NavPath->PathPoints.Num() > 0)
+	//{
+	//	FVector CurrentLocation = GetActorLocation();
+	//	FVector DestinationPoint = NavPath->PathPoints[0]; // 변경된 부분
+	//
+	//	float Distance = FVector::Dist(CurrentLocation, DestinationPoint);
+	//
+	//	if (Distance < 100.0f) // 목표 지점에 도착했는지 확인
+	//	{
+	//		NavPath->PathPoints.RemoveAt(0); // 다음 지점으로 이동
+	//		if (NavPath->PathPoints.Num() == 0)
+	//		{
+	//			bMoveToDestination = false; // 모든 지점에 도착
+	//		}
+	//	}
+	//	else
+	//	{
+	//		FVector Direction = (DestinationPoint - CurrentLocation).GetSafeNormal();
+	//		AddMovementInput(Direction, 1.0f);
+	//	}
+	//
+	//	// 디버그용으로 경로를 시각화
+	//	for (const FVector& Point : NavPath->PathPoints) // 변경된 부분
+	//	{
+	//		DrawDebugSphere(GetWorld(), Point, 20.0f, 8, FColor::Red, false, -1.0f, 0, 2.0f); // 변경된 부분
+	//	}
+	//}
+
+	if (bMoveToDestination && PathPoints.Num() > 0)
 	{
 		FVector CurrentLocation = GetActorLocation();
-		float Distance = FVector::Dist(CurrentLocation, Destination);
+		FVector DestinationPoint = PathPoints[0];
 
-		if (Distance > 100.0f) // Close enough to stop
+		float Distance = FVector::Dist(CurrentLocation, DestinationPoint);
+
+		if (Distance < 100.0f) // 목표 지점에 도착했는지 확인
 		{
-			FVector Direction = (Destination - CurrentLocation).GetSafeNormal();
-			AddMovementInput(Direction, 1.0f);
+			PathPoints.RemoveAt(0); // 다음 지점으로 이동
+			if (PathPoints.Num() == 0)
+			{
+				bMoveToDestination = false; // 모든 지점에 도착
+			}
 		}
 		else
 		{
-			bMoveToDestination = false;
+			FVector Direction = (DestinationPoint - CurrentLocation).GetSafeNormal();
+			AddMovementInput(Direction, 2.0f);
+		}
+
+		// 디버그용으로 경로를 시각화
+		for (int32 i = 1; i < PathPoints.Num(); ++i)
+		{
+			DrawDebugLine(
+				GetWorld(),
+				PathPoints[i - 1],
+				PathPoints[i],
+				FColor::Red,
+				false,
+				-1.0f,
+				0,
+				2.0f
+			);
 		}
 	}
-
 }
 
 void AMainPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -268,6 +370,6 @@ void AMainPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	DOREPLIFETIME(AMainPlayerCharacter, Destination);
 	DOREPLIFETIME(AMainPlayerCharacter, bMoveToDestination);
-
+	DOREPLIFETIME(AMainPlayerCharacter, PathPoints);
 	DOREPLIFETIME(AMainPlayerCharacter, mState);
 }
