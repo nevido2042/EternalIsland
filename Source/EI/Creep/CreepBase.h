@@ -6,24 +6,52 @@
 #include "GameFramework/Pawn.h"
 #include "CreepBase.generated.h"
 
+enum class EState :uint8
+{
+	Wander,
+	Trace,
+	Attack
+};
+
 UCLASS()
 class EI_API ACreepBase : public APawn
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	ACreepBase();
 
+	EState State;
+	void ChangeState(EState InState);
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent* SkeletalMeshComponent = nullptr;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere)
+	class UCapsuleComponent* CapsuleComponent = nullptr;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* AttackMontage = nullptr;
+protected:
+	void MovePawnToRandomLocation();
+	FVector GetRandomLocationInRadius(float Radius);
 
+	AActor* Target = nullptr;
+	//TArray<FOverlapResult> OutOverlaps;
+
+	UFUNCTION()
+	void CheckSurroundingWithSphere(UWorld* World, float Radius, /*TArray<FOverlapResult>& InOutOverlaps,*/ TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes);
+
+	AActor* CalculateClosestActor(TArray<FOverlapResult>& InOverlapResults);
+
+	void SetTarget(AActor* InActor);
+
+	void FollowTarget();
+
+	float MaxTraceDist = 800.f;
+	float CheckTargetDist();
+	void LostTarget();
+
+	float AttackRange = 100.f;
 };

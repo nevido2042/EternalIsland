@@ -16,12 +16,4 @@ class EI_API ACreepControllerBase : public AAIController
 
 protected:
     virtual void BeginPlay() override;
-
-public:
-    //UFUNCTION(Server, UnReliable)
-    void MoveToRandomLocation();
-    //void MoveToRandomLocation_Implementation();
-
-private:
-    FVector GetRandomLocationInRadius(float Radius);
 };
