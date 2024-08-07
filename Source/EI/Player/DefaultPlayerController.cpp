@@ -82,6 +82,7 @@ void ADefaultPlayerController::OnSetDestination()
 {
 	FVector ClickLocation = GetMouseLocation();
 	MoveToLocation(ClickLocation);
+	SpawnFX(ClickLocation);
 }
 
 void ADefaultPlayerController::MoveToLocation(const FVector Location)
@@ -251,6 +252,8 @@ void ADefaultPlayerController::BeginPlay()
 		MainWidget = CreateWidget(GetWorld(), MainWidgetAsset);
 		MainWidget->AddToViewport();
 	}
+
+	//GEngine->SetMaxFPS(10);
 }
 
 void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -260,8 +263,11 @@ void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ADefaultPlayerController::ServerMoveToLocation_Implementation(const FVector& DestLocation)
 {
-	MulticastMoveToLocation(DestLocation);
-	MulticastSpawnFX(DestLocation);
+	//MulticastMoveToLocation(DestLocation);
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+
+	//MulticastSpawnFX(DestLocation);
+
 	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
 		TEXT("ServerMoveToLocation"));
 	LOG(TEXT("ServerMoveToLocation"));
@@ -272,16 +278,21 @@ bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& Dest
 	return true;
 }
 
-void ADefaultPlayerController::MulticastMoveToLocation_Implementation(const FVector& DestLocation)
-{
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+//void ADefaultPlayerController::MulticastMoveToLocation_Implementation(const FVector& DestLocation)
+//{
+//	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+//
+//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+//		TEXT("MulticastMoveToLocation"));
+//	LOG(TEXT("MulticastMoveToLocation"));
+//}
 
-	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-		TEXT("MulticastMoveToLocation"));
-	LOG(TEXT("MulticastMoveToLocation"));
-}
+//void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Location)
+//{
+//	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, Location, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+//}
 
-void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Location)
+void ADefaultPlayerController::SpawnFX(const FVector& Location)
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, Location, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 }
