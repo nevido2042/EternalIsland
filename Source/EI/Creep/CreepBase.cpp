@@ -21,6 +21,8 @@ ACreepBase::ACreepBase()
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
 	SkeletalMeshComponent->SetupAttachment(CapsuleComponent);
 
+	bReplicates = true;
+
 
 }
 
@@ -55,7 +57,7 @@ void ACreepBase::ChangeState(EState InState)
 	}
 	case EState::Attack:
 	{
-		SkeletalMeshComponent->GetAnimInstance()->Montage_Play(AttackMontage);
+		MulticastPlayAttackMontage(AttackMontage);
 		ChangeState(EState::Trace);
 		break;
 	}
@@ -170,4 +172,9 @@ float ACreepBase::CheckTargetDist()
 void ACreepBase::LostTarget()
 {
 	ChangeState(EState::Wander);
+}
+
+void ACreepBase::MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage)
+{
+	SkeletalMeshComponent->GetAnimInstance()->Montage_Play(AttackMontage);
 }

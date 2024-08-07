@@ -54,4 +54,8 @@ protected:
 	void LostTarget();
 
 	float AttackRange = 100.f;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayAttackMontage(UAnimMontage* Montage);
+	void MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage);
 };
