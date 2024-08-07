@@ -5,6 +5,7 @@
 #include "NavigationSystem.h"
 #include "GameFramework/Actor.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "AIController.h"
 
 // Sets default values
 ACreepBase::ACreepBase()
@@ -25,7 +26,7 @@ void ACreepBase::ChangeState(EState InState)
 	case EState::Wander:
 	{
 		FTimerHandle WanderTimer;
-		GetWorldTimerManager().SetTimer(WanderTimer, this, &ACreepBase::MoveToRandomLocation, 1.f, true);
+		GetWorldTimerManager().SetTimer(WanderTimer, this, &ACreepBase::MovePawnToRandomLocation, 1.f, true);
 
 		FTimerHandle CheckTimer;
 		FTimerDelegate CheckDelegate;
@@ -49,16 +50,59 @@ void ACreepBase::ChangeState(EState InState)
 	}
 }
 
-void ACreepBase::MoveToRandomLocation_Implementation()
+//void ACreepBase::BeginPlay()
+//{
+//	Super::BeginPlay();
+//	MovePawnToRandomLocation(this);
+//}
+
+void ACreepBase::MovePawnToRandomLocation()
 {
-	MultiMoveToRandomLocation();
+    if (HasAuthority()) // 서버에서만 실행
+    {
+        UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+        if (NavSystem)
+        {
+            FNavLocation RandomLocation;
+            if (NavSystem->GetRandomReachablePointInRadius(GetActorLocation(), 1000.0f, RandomLocation))
+            {
+                AAIController* AIController = Cast<AAIController>(GetController());
+                if (AIController)
+                {
+                    AIController->MoveToLocation(RandomLocation);
+                    //Pawn->ReplicateMovement(); // 클라이언트와 동기화
+                }
+            }
+        }
+    }
 }
 
-void ACreepBase::MultiMoveToRandomLocation_Implementation()
-{
-	FVector RandomLocation = GetRandomLocationInRadius(1000.0f); // 1000 유닛 반경 내 랜덤 위치
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), RandomLocation);
-}
+//void ACreepBase::MoveToRandomLocation()
+//{
+//	FVector RandomLocation = GetRandomLocationInRadius(100.0f); // 1000 유닛 반경 내 랜덤 위치
+//	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), RandomLocation);
+//}
+//
+//void ACreepBase::ServerMoveToRandomLocation_Implementation()
+//{
+//	MoveToRandomLocation();
+//}
+//
+//bool ACreepBase::ServerMoveToRandomLocation_Validate()
+//{
+//	return true;
+//}
+
+//void ACreepBase::MoveToRandomLocation_Implementation()
+//{
+//	MultiMoveToRandomLocation();
+//}
+//
+//void ACreepBase::MultiMoveToRandomLocation_Implementation()
+//{
+//	FVector RandomLocation = GetRandomLocationInRadius(1000.0f); // 1000 유닛 반경 내 랜덤 위치
+//	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), RandomLocation);
+//}
 
 FVector ACreepBase::GetRandomLocationInRadius(float Radius)
 {

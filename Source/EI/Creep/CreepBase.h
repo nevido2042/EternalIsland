@@ -25,15 +25,20 @@ public:
 	EState State;
 	void ChangeState(EState InState);
 
+	//virtual void BeginPlay() override;
+
 protected:
-	UFUNCTION(Server, UnReliable)
-	void MoveToRandomLocation();
-	void MoveToRandomLocation_Implementation();
+	void MovePawnToRandomLocation();
+protected:
+	//void MoveToRandomLocation();
+	////void MoveToRandomLocation_Implementation();
+	//UFUNCTION(Server, Reliable, WithValidation)
+	//void ServerMoveToRandomLocation();
+	//bool ServerMoveToRandomLocation_Validate();
 
-	UFUNCTION(NetMulticast, UnReliable)
-	void MultiMoveToRandomLocation();
-	void MultiMoveToRandomLocation_Implementation();
-
+	//UFUNCTION(NetMulticast, UnReliable)
+	//void MultiMoveToRandomLocation();
+	//void MultiMoveToRandomLocation_Implementation();
 
 	FVector GetRandomLocationInRadius(float Radius);
 
