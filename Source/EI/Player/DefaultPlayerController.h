@@ -145,7 +145,7 @@ private:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerNormalAttack(const APawn* InTarget);
-	void ServerNormalAttack_Implementation(const APawn* InTarget);
+	void ServerNormalAttack_Implementation(APawn* InTarget);
 	bool ServerNormalAttack_Validate(const APawn* InTarget);
 
 	UFUNCTION(NetMulticast, Reliable)

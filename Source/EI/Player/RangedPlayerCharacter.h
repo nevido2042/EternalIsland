@@ -19,7 +19,7 @@ protected:
 
 	ARangedPlayerCharacter();
 
-	virtual void NormalAttack(const APawn* InTarget) override;
+	virtual void NormalAttack(APawn* InTarget) override;
 
 	virtual void QSkill();
 

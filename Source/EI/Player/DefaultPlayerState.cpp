@@ -16,7 +16,7 @@ ADefaultPlayerState::ADefaultPlayerState()
 	mMaxHP = mHP;
 	mAttackDamage = 10;
 }
-void ADefaultPlayerState::InflictDamage(int Amount, FVector ImpactNormal)
+void ADefaultPlayerState::InflictDamage(int Amount)
 {
 	AddHP(-Amount);
 

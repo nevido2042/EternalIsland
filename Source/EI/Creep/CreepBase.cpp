@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Player/DefaultPlayerState.h"
 #include "Player/MainPlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACreepBase::ACreepBase()
@@ -215,8 +216,9 @@ void ACreepBase::ApplyDamage()
 	AMainPlayerCharacter* TargetCharacter = Cast<AMainPlayerCharacter>(Target);
 	if(!TargetCharacter) return;
 
-	ADefaultPlayerState* TargetState = Cast<ADefaultPlayerState>(TargetCharacter->GetPlayerState());
-	if (!TargetState) return;
+	/*ADefaultPlayerState* TargetState = Cast<ADefaultPlayerState>(TargetCharacter->GetPlayerState());
+	if (!TargetState) return;*/
 
-	TargetState->InflictDamage(AttackDamage, FVector::Zero());
+	UGameplayStatics::ApplyDamage(TargetCharacter, AttackDamage, nullptr, nullptr, nullptr);
+	//TargetState->InflictDamage(AttackDamage);
 }

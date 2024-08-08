@@ -9,7 +9,7 @@ AMeleePlayerCharacter::AMeleePlayerCharacter()
     AttackSpeed = 1.f;
 }
 
-void AMeleePlayerCharacter::NormalAttack(const APawn* InTarget)
+void AMeleePlayerCharacter::NormalAttack(APawn* InTarget)
 {
 	Super::NormalAttack(InTarget);
 }

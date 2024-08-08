@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* NormalAttackMontage;
 
-	virtual void NormalAttack(const APawn* InTarget);
+	virtual void NormalAttack(APawn* InTarget);
 
 	virtual void QSkill();
 
