@@ -97,22 +97,11 @@ void ADefaultPlayerController::MoveToLocation(const FVector Location)
 		return;
 	}
 
-	if (ControlledCharacter)
-	{
-		ControlledCharacter->LookAtMousePos(Location);
-	}
-
-	//if (HasAuthority())
-	//{
-	//	ServerMoveToLocation(Location);
-	//}
-	//else
-	//{
-	//	ServerMoveToLocation(Location);
-	//}
+	Target = Cast<APawn>(GetClickActor());
 
 
 	ServerMoveToLocation(Location);
+
 
 }
 
@@ -220,6 +209,7 @@ void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 		return;
 	}
 
+
 	//WaitTime = AttackSpeed - (현재시간 - 마지막에 공격했던 시간)
 	float WaitTime = AttackSpeed - (GetWorld()->GetTimeSeconds() - LastAttackTime);
 
@@ -271,16 +261,14 @@ void ADefaultPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ADefaultPlayerController::ServerMoveToLocation_Implementation(const FVector& DestLocation)
 {	
-
 	AMainPlayerCharacter* MyCharacter = Cast<AMainPlayerCharacter>(GetPawn());
 	if (MyCharacter)
 	{
 		// 서버에서 캐릭터 이동을 처리
 		MyCharacter->MoveToLocation(DestLocation);
-	
-		// 모든 클라이언트에게 이동 명령 브로드캐스트
-		MulticastMoveToLocation(DestLocation);
 	}
+	MulticastSpawnFX(DestLocation);
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
 }
 
 bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& DestLocation)
@@ -288,43 +276,12 @@ bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& Dest
 	return true;
 }
 
-void ADefaultPlayerController::MulticastMoveToLocation_Implementation(const FVector& DestLocation)
-{
-
-	AMainPlayerCharacter* MyCharacter = Cast<AMainPlayerCharacter>(GetPawn());
-	if (MyCharacter)
-	{
-		// 서버는 이미 이동을 처리했으므로 클라이언트만 처리
-		if (!HasAuthority())
-		{
-			MyCharacter->MoveToLocation(DestLocation);
-		}
-	}
-}
 
 void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Location)
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, Location, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 }
 
-void ADefaultPlayerController::ServerLookAtMousePos_Implementation(const FVector& TargetLocation)
-{
-	MulticastLookAtMousePos(TargetLocation);
-}
-
-bool ADefaultPlayerController::ServerLookAtMousePos_Validate(const FVector& TargetLocation)
-{
-	return true;
-}
-
-void ADefaultPlayerController::MulticastLookAtMousePos_Implementation(const FVector& TargetLocation)
-{
-	if (ControlledCharacter)
-	{
-		ControlledCharacter->LookAtMousePos(TargetLocation);
-	}
-
-}
 
 void ADefaultPlayerController::ServerNormalAttack_Implementation(const APawn* InTarget)
 {
@@ -339,8 +296,7 @@ void ADefaultPlayerController::ServerNormalAttack_Implementation(const APawn* In
 	UE_LOG(LogTemp, Log, TEXT("TargetLocation on server: %s"), *TargetLocation.ToString());
 
 	if (ControlledCharacter)
-	{
-		StopMovement();
+	{;
 		ControlledCharacter->LookAtMousePos(TargetLocation);
 		ControlledCharacter->NormalAttack(InTarget);
 		MulticastNormalAttack(TargetLocation);
@@ -402,12 +358,6 @@ FVector ADefaultPlayerController::GetMouseLocation()
 	// If we hit a surface, cache the location
 	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 	return bHitSuccessful ? Hit.Location : FVector::ZeroVector;
-	/*if (bHitSuccessful)
-	{
-		return Hit.Location;
-	}
-
-	return FVector::ZeroVector;*/
 }
 
 AActor* ADefaultPlayerController::GetClickActor()

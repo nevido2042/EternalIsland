@@ -40,6 +40,7 @@ protected:
 	float AttackRange = 500.f;
 	float AttackSpeed = 1.f;
 
+
 public:
 	float GetAttackRange() { return AttackRange; }
 	float GetAttackSpeed() { return AttackSpeed; }
@@ -88,20 +89,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	//UPROPERTY(Replicated)
-	//FVector Destination;
-	//
-	//UPROPERTY(Replicated) // 이 부분을 추가
-	//bool bMoveToDestination;
-	//
-	////UNavigationPath* NavPath;
-	//UPROPERTY()
-	//UNavigationPath* NavPath;
 	UPROPERTY(Replicated)
 	FVector Destination;
 
 	UPROPERTY(Replicated)
 	bool bMoveToDestination;
+
+	UPROPERTY(Replicated)
+	bool bIsAttacking;
 
 	UPROPERTY(ReplicatedUsing = OnRep_PathPoints)
 	TArray<FVector> PathPoints;
@@ -109,6 +104,8 @@ public:
 
 
 	void MoveToLocation(const FVector& Location);
+
+	void FollowPath(float DeltaTime);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

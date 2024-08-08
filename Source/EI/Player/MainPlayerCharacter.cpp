@@ -9,7 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "NavigationSystem.h"
-#include "NavigationPath.h"
+#include "NavigationPath.h" // 이동로직에 쓰임
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "EI/Player/DefaultPlayerController.h"
@@ -38,6 +38,8 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
+	GetCharacterMovement()->MaxWalkSpeed = 450.f;
+
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -65,6 +67,8 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 	bReplicates = true;
+	bIsAttacking = false;
+	bMoveToDestination = false;
 }
 
 
@@ -95,6 +99,10 @@ void AMainPlayerCharacter::NormalAttack(const APawn* InTarget)
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("NormalAttack Called"));
+
+	bIsAttacking = true;
+	bMoveToDestination = false;
+	PathPoints.Empty();
 
 	if (NormalAttackMontage)
 	{
@@ -226,30 +234,25 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
 {
-	//Destination = Location;
-	//bMoveToDestination = true;
-	
-	
-	//if (UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld()))
-	//{
-	//	NavPath = NavSystem->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), Location);
-	//
-	//	if (NavPath && NavPath->PathPoints.Num() > 0)
-	//	{
-	//		bMoveToDestination = true;
-	//		Destination = Location;
-	//	}
-	//}
+	bIsAttacking = false;
 
 	if (HasAuthority()) // 서버에서만 경로를 계산
 	{
-		if (UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld()))
+		UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+		if (NavSys)
 		{
-			UNavigationPath* NavPath = NavSystem->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), Location);
+			FPathFindingQuery Query(this, *NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate), GetActorLocation(), Location);
+			FPathFindingResult Result = NavSys->FindPathSync(Query);
 
-			if (NavPath && NavPath->PathPoints.Num() > 0)
+			if (Result.IsSuccessful() && Result.Path.IsValid() && Result.Path->GetPathPoints().Num() > 0)
 			{
-				PathPoints = NavPath->PathPoints; // 경로 점들을 저장
+				// FNavPathPoint 배열을 FVector 배열로 변환
+				PathPoints.Empty();
+				for (const FNavPathPoint& NavPoint : Result.Path->GetPathPoints())
+				{
+					PathPoints.Add(NavPoint.Location);
+				}
+
 				bMoveToDestination = true;
 				Destination = Location;
 
@@ -259,6 +262,49 @@ void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
 		}
 	}
 }
+
+void AMainPlayerCharacter::FollowPath(float DeltaTime)
+{
+	FVector CurrentLocation = GetActorLocation();
+	FVector DestinationPoint = PathPoints[0];
+
+	float Distance = FVector::Dist(CurrentLocation, DestinationPoint);
+
+	if (Distance < 100.0f) // 목표 지점에 도착했는지 확인
+	{
+		PathPoints.RemoveAt(0); // 다음 지점으로 이동
+		if (PathPoints.Num() == 0)
+		{
+			bMoveToDestination = false; // 모든 지점에 도착
+			return;
+		}
+	}
+
+	// 고정 속도
+	float Speed = 1.0f;
+	FVector Direction = (DestinationPoint - CurrentLocation).GetSafeNormal();
+	AddMovementInput(Direction, Speed);
+
+	FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(CurrentLocation, DestinationPoint);
+	LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
+	SetActorRotation(LookAtRotator);
+
+	// 디버그용으로 경로를 시각화
+	for (int32 i = 1; i < PathPoints.Num(); ++i)
+	{
+		DrawDebugLine(
+			GetWorld(),
+			PathPoints[i - 1],
+			PathPoints[i],
+			FColor::Red,
+			false,
+			-1.0f,
+			0,
+			2.0f
+		);
+	}
+}
+
 
 void AMainPlayerCharacter::OnRep_PathPoints()
 {
@@ -281,86 +327,9 @@ void AMainPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//if (bMoveToDestination)
-	//{
-	//	FVector CurrentLocation = GetActorLocation();
-	//	float Distance = FVector::Dist(CurrentLocation, Destination);
-	//
-	//	if (Distance > 100.0f) // Close enough to stop
-	//	{
-	//		FVector Direction = (Destination - CurrentLocation).GetSafeNormal();
-	//		AddMovementInput(Direction, 1.0f);
-	//	}
-	//	else
-	//	{
-	//		bMoveToDestination = false;
-	//	}
-	//}
-	 
-	 
-	//if (bMoveToDestination && NavPath && NavPath->PathPoints.Num() > 0)
-	//{
-	//	FVector CurrentLocation = GetActorLocation();
-	//	FVector DestinationPoint = NavPath->PathPoints[0]; // 변경된 부분
-	//
-	//	float Distance = FVector::Dist(CurrentLocation, DestinationPoint);
-	//
-	//	if (Distance < 100.0f) // 목표 지점에 도착했는지 확인
-	//	{
-	//		NavPath->PathPoints.RemoveAt(0); // 다음 지점으로 이동
-	//		if (NavPath->PathPoints.Num() == 0)
-	//		{
-	//			bMoveToDestination = false; // 모든 지점에 도착
-	//		}
-	//	}
-	//	else
-	//	{
-	//		FVector Direction = (DestinationPoint - CurrentLocation).GetSafeNormal();
-	//		AddMovementInput(Direction, 1.0f);
-	//	}
-	//
-	//	// 디버그용으로 경로를 시각화
-	//	for (const FVector& Point : NavPath->PathPoints) // 변경된 부분
-	//	{
-	//		DrawDebugSphere(GetWorld(), Point, 20.0f, 8, FColor::Red, false, -1.0f, 0, 2.0f); // 변경된 부분
-	//	}
-	//}
-
 	if (bMoveToDestination && PathPoints.Num() > 0)
 	{
-		FVector CurrentLocation = GetActorLocation();
-		FVector DestinationPoint = PathPoints[0];
-
-		float Distance = FVector::Dist(CurrentLocation, DestinationPoint);
-
-		if (Distance < 100.0f) // 목표 지점에 도착했는지 확인
-		{
-			PathPoints.RemoveAt(0); // 다음 지점으로 이동
-			if (PathPoints.Num() == 0)
-			{
-				bMoveToDestination = false; // 모든 지점에 도착
-			}
-		}
-		else
-		{
-			FVector Direction = (DestinationPoint - CurrentLocation).GetSafeNormal();
-			AddMovementInput(Direction, 2.0f);
-		}
-
-		// 디버그용으로 경로를 시각화
-		for (int32 i = 1; i < PathPoints.Num(); ++i)
-		{
-			DrawDebugLine(
-				GetWorld(),
-				PathPoints[i - 1],
-				PathPoints[i],
-				FColor::Red,
-				false,
-				-1.0f,
-				0,
-				2.0f
-			);
-		}
+		FollowPath(DeltaTime);
 	}
 }
 
