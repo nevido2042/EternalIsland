@@ -67,7 +67,6 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 	bReplicates = true;
-	bIsAttacking = false;
 	bMoveToDestination = false;
 }
 
@@ -100,7 +99,6 @@ void AMainPlayerCharacter::NormalAttack(const APawn* InTarget)
 
 	UE_LOG(LogTemp, Log, TEXT("NormalAttack Called"));
 
-	bIsAttacking = true;
 	bMoveToDestination = false;
 	PathPoints.Empty();
 
@@ -234,7 +232,6 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
 {
-	bIsAttacking = false;
 
 	if (HasAuthority()) // 서버에서만 경로를 계산
 	{
