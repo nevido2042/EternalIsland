@@ -52,8 +52,6 @@ protected:
 
 	void FollowTarget();
 
-	void LookAt(FVector InLocation);
-
 	UPROPERTY(EditAnywhere)
 	float MaxTraceDist = 800.f;
 	float CheckTargetDist();

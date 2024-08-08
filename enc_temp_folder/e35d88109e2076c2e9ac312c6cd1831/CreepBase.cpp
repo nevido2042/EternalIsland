@@ -59,12 +59,6 @@ void ACreepBase::ChangeState(EState InState)
 	}
 	case EState::Attack:
 	{
-		if (!IsValid(Target))
-		{
-			ChangeState(EState::Wander);
-			break;
-		}
-
 		MulticastPlayAttackMontage(AttackMontage);
 		ApplyDamage();
 
@@ -93,8 +87,6 @@ void ACreepBase::MovePawnToRandomLocation()
         if (AIController)
         {
             AIController->MoveToLocation(RandomLocation);
-
-			LookAt(RandomLocation);
         }
     }
 }
@@ -178,19 +170,14 @@ void ACreepBase::FollowTarget()
 	{
 		AIController->MoveToActor(Target);
 
-		LookAt(Target->GetActorLocation());
+		// Calculate the direction to the target
+		FVector Direction = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		FRotator NewRotation = Direction.Rotation();
+		NewRotation = FRotator(0.f, NewRotation.Yaw - 90.f, 0.f);
+
+		// Set the new rotation
+		SetActorRotation(NewRotation);
 	}
-}
-
-void ACreepBase::LookAt(FVector InLocation)
-{
-	// Calculate the direction to the target
-	FVector Direction = (InLocation - GetActorLocation()).GetSafeNormal();
-	FRotator NewRotation = Direction.Rotation();
-	NewRotation = FRotator(0.f, NewRotation.Yaw - 90.f, 0.f);
-
-	// Set the new rotation
-	SetActorRotation(NewRotation);
 }
 
 float ACreepBase::CheckTargetDist()
@@ -218,5 +205,5 @@ void ACreepBase::ApplyDamage()
 	ADefaultPlayerState* TargetState = Cast<ADefaultPlayerState>(TargetCharacter->GetPlayerState());
 	if (!TargetState) return;
 
-	TargetState->InflictDamage(AttackDamage, FVector::Zero());
+	TargetState->InflictDamage(10.f, FVector::Zero());
 }
