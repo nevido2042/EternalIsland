@@ -334,7 +334,7 @@ void ADefaultPlayerController::MulticastNormalAttack_Implementation(const FVecto
 	}
 }
 
-void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickLocation)
+void ADefaultPlayerController::ServerQSkill(const FVector& ClickLocation)
 {
 	UE_LOG(LogTemp, Log, TEXT("ServerQSkill called on server"));
 	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
@@ -347,10 +347,23 @@ void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickL
 	}
 }
 
-bool ADefaultPlayerController::ServerQSkill_Validate(const FVector& ClickLocation)
-{
-	return true;
-}
+//void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickLocation)
+//{
+//	UE_LOG(LogTemp, Log, TEXT("ServerQSkill called on server"));
+//	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
+//	if (ControlledCharacter)
+//	{
+//		StopMovement();
+//		ControlledCharacter->LookAtMousePos(ClickLocation);
+//		ControlledCharacter->QSkill();
+//		//MulticastNormalAttack(ClickLocation);
+//	}
+//}
+
+//bool ADefaultPlayerController::ServerQSkill_Validate(const FVector& ClickLocation)
+//{
+//	return true;
+//}
 
 
 //void ADefaultPlayerController::MulticastServerQSkill_Implementation(const FVector& ClickLocation)
