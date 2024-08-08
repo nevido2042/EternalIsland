@@ -69,6 +69,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	bReplicates = true;
 	bMoveToDestination = false;
+	bIsAttacking = false;
 }
 
 
@@ -100,8 +101,6 @@ void AMainPlayerCharacter::NormalAttack(APawn* InTarget)
 
 	UE_LOG(LogTemp, Log, TEXT("NormalAttack Called"));
 
-	bMoveToDestination = false;
-	PathPoints.Empty();
 
 	if (NormalAttackMontage)
 	{
@@ -125,6 +124,9 @@ void AMainPlayerCharacter::NormalAttack(APawn* InTarget)
 
 void AMainPlayerCharacter::QSkill()
 {
+	bIsAttacking = true;
+	bMoveToDestination = false;
+	PathPoints.Empty();
 }
 
 void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
@@ -236,7 +238,7 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
 {
-
+	bIsAttacking = false;
 	if (HasAuthority()) // 서버에서만 경로를 계산
 	{
 		UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());

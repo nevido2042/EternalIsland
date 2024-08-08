@@ -296,7 +296,8 @@ void ADefaultPlayerController::ServerNormalAttack_Implementation(APawn* InTarget
 	UE_LOG(LogTemp, Log, TEXT("TargetLocation on server: %s"), *TargetLocation.ToString());
 
 	if (ControlledCharacter)
-	{;
+	{
+		StopMovement();
 		ControlledCharacter->LookAtMousePos(TargetLocation);
 		ControlledCharacter->NormalAttack(InTarget);
 		MulticastNormalAttack(TargetLocation);

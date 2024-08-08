@@ -95,7 +95,8 @@ public:
 	UPROPERTY(Replicated)
 	bool bMoveToDestination;
 
-
+	UPROPERTY(Replicated)
+	bool bIsAttacking;
 
 	UPROPERTY(ReplicatedUsing = OnRep_PathPoints)
 	TArray<FVector> PathPoints;
