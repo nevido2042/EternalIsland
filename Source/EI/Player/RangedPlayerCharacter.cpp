@@ -10,7 +10,7 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
     AttackSpeed = 2.f;
 }
 
-void ARangedPlayerCharacter::NormalAttack(const APawn* InTarget)
+void ARangedPlayerCharacter::NormalAttack(APawn* InTarget)
 {
     Super::NormalAttack(InTarget);
 }

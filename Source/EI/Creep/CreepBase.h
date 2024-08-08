@@ -66,5 +66,8 @@ protected:
 	void MulticastPlayAttackMontage(UAnimMontage* Montage);
 	void MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage);
 
+	UPROPERTY(EditAnywhere)
+	float AttackDamage = 20.f;
+
 	void ApplyDamage();
 };

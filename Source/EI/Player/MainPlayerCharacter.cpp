@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "EI/Player/DefaultPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -90,7 +91,7 @@ void AMainPlayerCharacter::BeginPlay()
 
 	mState = GetPlayerState<ADefaultPlayerState>();
 }
-void AMainPlayerCharacter::NormalAttack(const APawn* InTarget)
+void AMainPlayerCharacter::NormalAttack(APawn* InTarget)
 {
 	if (!InTarget)
 	{
@@ -118,7 +119,8 @@ void AMainPlayerCharacter::NormalAttack(const APawn* InTarget)
 	{
 		return;
 	}
-	targetState->InflictDamage(MyState->GetAttackDamage(), InTarget->GetActorLocation());
+
+	UGameplayStatics::ApplyDamage(InTarget, MyState->GetAttackDamage(), nullptr, nullptr, nullptr);
 }
 
 void AMainPlayerCharacter::QSkill()
@@ -171,21 +173,21 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 	}
 
 	//ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
-	ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(targetCharacter->GetPlayerState());
+	//ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(targetCharacter->GetPlayerState());
 	ADefaultPlayerState* MyState = Cast<ADefaultPlayerState>(GetPlayerState());
 
-	if (!IsValid(targetState))
+	/*if (!IsValid(targetState))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attack - targetState Is Not Valid"));
 		return;
-	}
+	}*/
 
 	if (!MyState)
 	{
 		return;
 	}
 
-	targetState->InflictDamage(MyState->GetAttackDamage(), result.ImpactNormal);
+	UGameplayStatics::ApplyDamage(targetCharacter, MyState->GetAttackDamage(), nullptr, nullptr, nullptr);
 	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
 }
 
@@ -212,6 +214,8 @@ void AMainPlayerCharacter::MulticastPlayAttackMontage_Implementation(UAnimMontag
 
 float AMainPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	ADefaultPlayerState* MyState = Cast<ADefaultPlayerState>(GetPlayerState());
+	MyState->InflictDamage(DamageAmount);
 	return 0.0f;
 }
 

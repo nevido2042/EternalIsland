@@ -283,7 +283,7 @@ void ADefaultPlayerController::MulticastSpawnFX_Implementation(const FVector& Lo
 }
 
 
-void ADefaultPlayerController::ServerNormalAttack_Implementation(const APawn* InTarget)
+void ADefaultPlayerController::ServerNormalAttack_Implementation(APawn* InTarget)
 {
 	if (!InTarget)
 	{

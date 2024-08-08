@@ -64,7 +64,7 @@ public:
 		return mExp;
 	}
 
-	void InflictDamage(int Amount, FVector ImpactNormal = FVector(0.f));
+	void InflictDamage(int Amount);
 
 
 public:

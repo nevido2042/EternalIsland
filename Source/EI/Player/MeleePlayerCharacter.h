@@ -16,7 +16,7 @@ class EI_API AMeleePlayerCharacter : public AMainPlayerCharacter
 	
 	AMeleePlayerCharacter();
 
-	virtual void NormalAttack(const APawn* InTarget) override;
+	virtual void NormalAttack(APawn* InTarget) override;
 
 	virtual void QSkill();
 };
