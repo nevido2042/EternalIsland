@@ -52,7 +52,9 @@ public:
 
 	virtual void QSkill();
 
-	void NormalAttackHitCheck(float Radius = 100.f, float Height = 100.f);
+	virtual void WSkill();
+
+	void CapsuleHitCheck(float Radius = 100.f, float Height = 100.f);
 
 	void LookAtMousePos(const FVector& TargetLocation);
 

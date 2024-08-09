@@ -19,10 +19,18 @@ protected:
 
 	ARangedPlayerCharacter();
 
+	//virtual void BeginPlay() override;
+
 	virtual void NormalAttack(APawn* InTarget) override;
 
 	virtual void QSkill();
 
+	virtual void WSkill();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> Projectile;
+
+	/*UFUNCTION(Server, Reliable)
+	void SpawnProjecttile();
+	void SpawnProjecttile_Implementation();*/
 };

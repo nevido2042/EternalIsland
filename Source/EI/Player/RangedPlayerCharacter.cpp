@@ -10,6 +10,13 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
     AttackSpeed = 2.f;
 }
 
+//void ARangedPlayerCharacter::BeginPlay()
+//{
+//
+//    //GetWorld()->SpawnActor<AActor>(Projectile, GetActorLocation(), GetActorRotation());
+//
+//}
+
 void ARangedPlayerCharacter::NormalAttack(APawn* InTarget)
 {
     Super::NormalAttack(InTarget);
@@ -26,6 +33,33 @@ void ARangedPlayerCharacter::QSkill()
         UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
     }
 
-    NormalAttackHitCheck(50.f, 500.f);
+    CapsuleHitCheck(50.f, 500.f);
     //GetWorld()->SpawnActor(Projectile);
 }
+
+void ARangedPlayerCharacter::WSkill()
+{
+    if (NormalAttackMontage)
+    {
+        MulticastPlayAttackMontage(NormalAttackMontage);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
+    }
+   
+    //SpawnProjecttile();
+
+    GetWorld()->SpawnActor<AActor>(Projectile, GetActorLocation(), GetActorRotation());
+
+
+    //CapsuleHitCheck(50.f, 500.f);
+    //GetWorld()->SpawnActor(Projectile);
+}
+
+//void ARangedPlayerCharacter::SpawnProjecttile_Implementation()
+//{
+//
+//    GetWorld()->SpawnActor<AActor>(Projectile, GetActorLocation(), GetActorRotation());
+//
+//}

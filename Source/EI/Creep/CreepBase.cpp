@@ -222,3 +222,9 @@ void ACreepBase::ApplyDamage()
 	UGameplayStatics::ApplyDamage(TargetCharacter, AttackDamage, nullptr, nullptr, nullptr);
 	//TargetState->InflictDamage(AttackDamage);
 }
+
+float ACreepBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Destroy();
+	return 0.0f;
+}
