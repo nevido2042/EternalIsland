@@ -71,13 +71,10 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	bMoveToDestination = false;
 }
 
-
-
 // Called when the game starts or when spawned
 void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 
 	//APlayerController* PC = Cast<APlayerController>(GetController());
 	//if (PC)
@@ -112,10 +109,10 @@ void AMainPlayerCharacter::NormalAttack(APawn* InTarget)
 		UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
 	}
 
-	ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(InTarget->GetPlayerState());
+	/*ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(InTarget->GetPlayerState());*/
 	ADefaultPlayerState* MyState = Cast<ADefaultPlayerState>(GetPlayerState());
 
-	if (!targetState || !MyState)
+	if (/*!targetState || */!MyState)
 	{
 		return;
 	}
@@ -127,7 +124,11 @@ void AMainPlayerCharacter::QSkill()
 {
 }
 
-void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
+void AMainPlayerCharacter::WSkill()
+{
+}
+
+void AMainPlayerCharacter::CapsuleHitCheck(float Radius , float Height)
 {
 	UE_LOG(LogTemp, Log, TEXT("NormalAttackHitCheck Called"));
 	FHitResult result;
@@ -165,12 +166,12 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 		return;
 	}
 
-	AMainPlayerCharacter* targetCharacter = Cast<AMainPlayerCharacter>(HitActor);
+	/*AMainPlayerCharacter* targetCharacter = Cast<AMainPlayerCharacter>(HitActor);
 	if (!IsValid(targetCharacter))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attack - targetCharacter Is Not Valid"));
 		return;
-	}
+	}*/
 
 	//ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
 	//ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(targetCharacter->GetPlayerState());
@@ -187,7 +188,7 @@ void AMainPlayerCharacter::NormalAttackHitCheck(float Radius , float Height)
 		return;
 	}
 
-	UGameplayStatics::ApplyDamage(targetCharacter, MyState->GetAttackDamage(), nullptr, nullptr, nullptr);
+	UGameplayStatics::ApplyDamage(HitActor, MyState->GetAttackDamage(), nullptr, nullptr, nullptr);
 	UE_LOG(LogTemp, Warning, TEXT("Hit Successe"));
 }
 

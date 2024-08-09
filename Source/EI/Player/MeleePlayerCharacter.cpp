@@ -25,6 +25,6 @@ void AMeleePlayerCharacter::QSkill()
         UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
     }
 
-    NormalAttackHitCheck(200.f, 200.f);
+    CapsuleHitCheck(200.f, 200.f);
     //GetWorld()->SpawnActor(Projectile);
 }
