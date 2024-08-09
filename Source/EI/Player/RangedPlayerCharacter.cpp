@@ -26,14 +26,7 @@ void ARangedPlayerCharacter::QSkill()
 {
     Super::QSkill();
 
-    if (NormalAttackMontage)
-    {
-        MulticastPlayAttackMontage(NormalAttackMontage);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
-    }
+    UE_LOG(LogTemp, Log, TEXT("QSkill"));
 
     CapsuleHitCheck(50.f, 500.f);
     //GetWorld()->SpawnActor(Projectile);

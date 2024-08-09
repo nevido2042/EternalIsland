@@ -157,9 +157,9 @@ private:
 	void ServerQSkill_Implementation(const FVector& ClickLocation);
 	bool ServerQSkill_Validate(const FVector& ClickLocation);
 
-	/*UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void MulticastServerQSkill(const FVector& ClickLocation);
-	void MulticastServerQSkill_Implementation(const FVector& ClickLocation);*/
+	void MulticastServerQSkill_Implementation(const FVector& ClickLocation);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerWSkill(const FVector& ClickLocation);

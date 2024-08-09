@@ -69,7 +69,6 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	bReplicates = true;
 	bMoveToDestination = false;
-	bIsAttacking = false;
 }
 
 // Called when the game starts or when spawned
@@ -124,9 +123,20 @@ void AMainPlayerCharacter::NormalAttack(APawn* InTarget)
 
 void AMainPlayerCharacter::QSkill()
 {
-	bIsAttacking = true;
+
+	UE_LOG(LogTemp, Log, TEXT("Super QSkill"));
+
 	bMoveToDestination = false;
 	PathPoints.Empty();
+
+	if (NormalAttackMontage)
+	{
+		MulticastPlayAttackMontage(NormalAttackMontage);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
+	}
 }
 
 void AMainPlayerCharacter::WSkill()
@@ -199,15 +209,14 @@ void AMainPlayerCharacter::CapsuleHitCheck(float Radius , float Height)
 
 void AMainPlayerCharacter::LookAtMousePos(const FVector& TargetLocation)
 {
-	//ADefaultPlayerController* Cont = Cast<ADefaultPlayerController>(GetController());
-	//FVector TargetLocation = Cont->GetClickLocation();
+		FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+		LookAtRotator.Pitch = 0.f; // Pitch를 0으로 고정
+		LookAtRotator.Roll = 0.f;  // Roll을 0으로 고정
+		SetActorRotation(LookAtRotator);
+	//UE_LOG(LogTemp, Log, TEXT("LookAtMousePos"));
 	//FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
 	//LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
 	//SetActorRotation(LookAtRotator);
-	//
-	FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-	LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
-	SetActorRotation(LookAtRotator);
 }
 
 void AMainPlayerCharacter::MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage)
@@ -242,7 +251,8 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
 {
-	bIsAttacking = false;
+	bMoveToDestination = false;
+	PathPoints.Empty();
 	if (HasAuthority()) // 서버에서만 경로를 계산
 	{
 		UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
