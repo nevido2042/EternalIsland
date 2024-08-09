@@ -25,9 +25,21 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
+	class USphereComponent* SphereComponent;
+
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(EditAnywhere)
 	class UProjectileMovementComponent* ProjectileMovementComponent;
+
+public:
+	void SetOwnerActor(AActor* InActor);
+
+protected:
+	AActor* OwnerActor = nullptr; //발사한 액터 주인
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 };

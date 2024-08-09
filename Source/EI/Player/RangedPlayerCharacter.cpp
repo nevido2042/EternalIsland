@@ -8,6 +8,8 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
 {
     AttackRange = 500.f;
     AttackSpeed = 2.f;
+
+    bReplicates = true;
 }
 
 //void ARangedPlayerCharacter::BeginPlay()
@@ -50,10 +52,13 @@ void ARangedPlayerCharacter::WSkill()
         UE_LOG(LogTemp, Warning, TEXT("NormalAttackMontage is not set"));
     }
    
-    //SpawnProjecttile();
 
-    GetWorld()->SpawnActor<AActor>(Projectile, GetActorLocation(), GetActorRotation());
-
+    FTransform SpawnTransform;
+    AProjectile* NewProjectile = GetWorld()->SpawnActorDeferred<AProjectile>(Projectile, SpawnTransform);
+    NewProjectile->SetOwnerActor(this);
+    SpawnTransform.SetLocation(GetActorLocation());
+    SpawnTransform.SetRotation(FQuat(GetActorRotation()));
+    UGameplayStatics::FinishSpawningActor(NewProjectile, SpawnTransform);
 
     //CapsuleHitCheck(50.f, 500.f);
     //GetWorld()->SpawnActor(Projectile);
