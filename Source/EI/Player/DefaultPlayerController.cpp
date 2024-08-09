@@ -128,7 +128,7 @@ void ADefaultPlayerController::OnActiveSkillClicked()
 {
 	if (SelectSkill == ESkill::NONE)
 		return;
-
+	UE_LOG(LogTemp, Log, TEXT("OnActiveSkillClicked"));
 	StopMovement();
 
 	ActiveSkill(SelectSkill);
@@ -138,6 +138,7 @@ void ADefaultPlayerController::OnActiveSkillClicked()
 void ADefaultPlayerController::OnFirstSkillClicked()
 {
 	SelectSkill = ESkill::Q;
+	UE_LOG(LogTemp, Log, TEXT("OnFirstSkillClicked"))
 	//StopMovement();
 }
 
@@ -153,46 +154,81 @@ void ADefaultPlayerController::OnThirdSkillClicked()
 	//StopMovement();
 }
 
+//void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
+//{
+//	switch (InSkill)
+//	{
+//	case ESkill::NONE:
+//		break;
+//	case ESkill::Q:
+//	{
+//		if (ControlledCharacter)
+//		{
+//			FVector ClickLocation = GetMouseLocation();
+//			ControlledCharacter->LookAtMousePos(ClickLocation);
+//			ServerQSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
+//		}
+//		break;
+//	}
+//	case ESkill::W:
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
+//		if (ControlledCharacter)
+//		{
+//			FVector ClickLocation = GetMouseLocation();
+//			// 로그 출력: 클릭 위치 확인
+//			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
+//
+//			ServerWSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
+//		}
+//		break;
+//	}
+//		
+//	case ESkill::E:
+//		break;
+//	default:
+//		break;
+//	}
+//
+//	SelectSkill = ESkill::NONE;
+//}
+
 void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 {
-	switch (InSkill)
+	FVector ClickLocation = GetMouseLocation();
+
+	if (ControlledCharacter)
 	{
-	case ESkill::NONE:
-		break;
-	case ESkill::Q:
-	{
-		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
-		if (ControlledCharacter)
+
+		UE_LOG(LogTemp, Log, TEXT("ClickLocation on ActiveSkill: %s"), *ClickLocation.ToString());
+
+		// 클라이언트에서 먼저 회전 강제 적용
+		ControlledCharacter->LookAtMousePos(ClickLocation);
+
+		// 서버에 회전 및 스킬 사용 요청
+		switch (InSkill)
 		{
-			FVector ClickLocation = GetMouseLocation();
-			// 로그 출력: 클릭 위치 확인
-			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
+		case ESkill::NONE:
+			break;
 
-			ServerQSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
+		case ESkill::Q:
+			ServerQSkill(ClickLocation);
+			break;
+
+		case ESkill::W:
+			ServerWSkill(ClickLocation);
+			break;
+
+		case ESkill::E:
+			break;
+
+		default:
+			break;
 		}
-		break;
-	}
-	case ESkill::W:
-	{
-		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
-		if (ControlledCharacter)
-		{
-			FVector ClickLocation = GetMouseLocation();
-			// 로그 출력: 클릭 위치 확인
-			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
 
-			ServerWSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
-		}
-		break;
+		// 선택된 스킬 초기화
+		SelectSkill = ESkill::NONE;
 	}
-		
-	case ESkill::E:
-		break;
-	default:
-		break;
-	}
-
-	SelectSkill = ESkill::NONE;
 }
 
 void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
@@ -282,7 +318,6 @@ void ADefaultPlayerController::ServerMoveToLocation_Implementation(const FVector
 		MyCharacter->MoveToLocation(DestLocation);
 	}
 	MulticastSpawnFX(DestLocation);
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
 }
 
 bool ADefaultPlayerController::ServerMoveToLocation_Validate(const FVector& DestLocation)
@@ -342,10 +377,10 @@ void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickL
 	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
 	if (ControlledCharacter)
 	{
-		StopMovement();
 		ControlledCharacter->LookAtMousePos(ClickLocation);
+		//MulticastServerQSkill(ClickLocation);
+		//StopMovement();
 		ControlledCharacter->QSkill();
-		//MulticastNormalAttack(ClickLocation);
 	}
 }
 
@@ -355,15 +390,15 @@ bool ADefaultPlayerController::ServerQSkill_Validate(const FVector& ClickLocatio
 }
 
 
-//void ADefaultPlayerController::MulticastServerQSkill_Implementation(const FVector& ClickLocation)
-//{
-//	//if (ControlledCharacter)
-//	//{
-//	//	UE_LOG(LogTemp, Log, TEXT("MulticastQSkill called on client/server"));
-//	//	ControlledCharacter->LookAtMousePos(ClickLocation);
-//	//	//ControlledCharacter->NormalAttack();
-//	//}
-//}
+void ADefaultPlayerController::MulticastServerQSkill_Implementation(const FVector& ClickLocation)
+{
+	if (ControlledCharacter)
+	{
+		UE_LOG(LogTemp, Log, TEXT("MulticastQSkill called on client"));
+		ControlledCharacter->LookAtMousePos(ClickLocation);
+		//ControlledCharacter->NormalAttack();
+	}
+}
 
 FVector ADefaultPlayerController::GetMouseLocation()
 {
