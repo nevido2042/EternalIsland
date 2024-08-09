@@ -24,6 +24,8 @@ void ARangedPlayerCharacter::NormalAttack(APawn* InTarget)
 
 void ARangedPlayerCharacter::QSkill()
 {
+    Super::QSkill();
+
     if (NormalAttackMontage)
     {
         MulticastPlayAttackMontage(NormalAttackMontage);
