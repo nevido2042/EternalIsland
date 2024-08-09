@@ -216,6 +216,7 @@ void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 		return;
 	}
 
+
 	if (GetWorld()->GetTimerManager().TimerExists(TimerHandle_NormalAttack))
 	{
 		return;
@@ -227,6 +228,7 @@ void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 
 	if (WaitTime < 0.f)
 	{
+		StopMovement();
 		WaitTime = 0.f;
 	}
 

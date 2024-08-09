@@ -91,6 +91,9 @@ void AMainPlayerCharacter::BeginPlay()
 }
 void AMainPlayerCharacter::NormalAttack(APawn* InTarget)
 {
+	bMoveToDestination = false;
+	PathPoints.Empty();
+
 	if (!InTarget)
 	{
 		return;
