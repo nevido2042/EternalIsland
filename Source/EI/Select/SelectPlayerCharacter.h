@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "GameInfo.h"
 #include "GameFramework/Character.h"
 #include "SelectPlayerCharacter.generated.h"
 
@@ -16,6 +16,16 @@ public:
 	ASelectPlayerCharacter();
 
 protected:
+	UPROPERTY(EditAnyWhere)
+	EPlayerJob mJob;
+
+public:
+	EPlayerJob GetPlayerJob()	const
+	{
+		return mJob;
+	}
+
+protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -25,5 +35,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 };

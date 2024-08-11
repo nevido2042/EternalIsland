@@ -56,6 +56,16 @@ public:
 };
 
 UENUM()
+enum class EPlayerJob : uint8
+{
+	None,
+	Swordsman,
+	Gunslinger,
+	End
+
+};
+
+UENUM()
 enum class EServerType : uint32
 {
 	Login,

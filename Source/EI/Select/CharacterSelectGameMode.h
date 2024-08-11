@@ -13,5 +13,10 @@ UCLASS()
 class EI_API ACharacterSelectGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	ACharacterSelectGameMode();
+
+	virtual void BeginPlay() override;
 	
 };

@@ -30,6 +30,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> Projectile;
 
+
 	/*UFUNCTION(Server, Reliable)
 	void SpawnProjecttile();
 	void SpawnProjecttile_Implementation();*/
