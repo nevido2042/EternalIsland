@@ -157,9 +157,9 @@ private:
 	void ServerQSkill_Implementation(const FVector& ClickLocation);
 	bool ServerQSkill_Validate(const FVector& ClickLocation);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastServerQSkill(const FVector& ClickLocation);
-	void MulticastServerQSkill_Implementation(const FVector& ClickLocation);
+	UFUNCTION(Client, Reliable)
+	void ClientQSkill(const FVector& ClickLocation);
+	void ClientQSkill_Implementation(const FVector& ClickLocation);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerWSkill(const FVector& ClickLocation);
@@ -180,4 +180,7 @@ protected:
 	UUserWidget* MainWidget;
 public:
 	UUserWidget* GetMainWidget() { return MainWidget; }
+
+protected:
+	FTimerHandle QSkillTimerHandle;
 };

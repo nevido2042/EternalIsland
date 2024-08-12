@@ -91,7 +91,7 @@ void ASelectPlayerController::GetLifetimeReplicatedProps(
 //
 //			if (IsValid(GameInst))
 //			{
-//				// Å¬¶óÀÌ¾ðÆ®°¡ °¡Áö°í ÀÖ´Â GameInstÀÇ SelectJobÀ» º¯°æÇÑ´Ù.
+//				// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ GameInstï¿½ï¿½ SelectJobï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 //				GameInst->ChangeSelectJob(mSelectJob);
 //			}
 //
