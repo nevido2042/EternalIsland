@@ -5,6 +5,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -21,6 +22,9 @@ AProjectile::AProjectile()
 	ProjectileMovementComponent = CreateDefaultSubobject< UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 
 	bReplicates = true;
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+	NiagaraComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

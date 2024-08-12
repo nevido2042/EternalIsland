@@ -3,6 +3,7 @@
 
 #include "RangedPlayerCharacter.h"
 #include "DefaultPlayerController.h"
+#include "NiagaraComponent.h"
 
 ARangedPlayerCharacter::ARangedPlayerCharacter()
 {
@@ -10,14 +11,22 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
     AttackSpeed = 2.f;
 
     bReplicates = true;
+
+    /*NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+    NiagaraComponent->SetupAttachment(RootComponent);*/
 }
 
-//void ARangedPlayerCharacter::BeginPlay()
-//{
-//
-//    //GetWorld()->SpawnActor<AActor>(Projectile, GetActorLocation(), GetActorRotation());
-//
-//}
+void ARangedPlayerCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    //GetWorld()->SpawnActor<AActor>(Projectile, GetActorLocation(), GetActorRotation());
+    //NiagaraComponent->ActivateSystem();
+
+    //NiagaraComponent->SetNiagaraVariableFloat("User.SimulationSpeed", 3.f);
+    //NiagaraComponent->SetNiagaraVariableFloat("User.PlaybackRate", 3.f);
+    //NiagaraComponent->SetNiagaraVariableFloat(TEXT("User.SimulationSpeed"), 3.f);
+
+}
 
 void ARangedPlayerCharacter::NormalAttack(APawn* InTarget)
 {
@@ -31,7 +40,8 @@ void ARangedPlayerCharacter::QSkill()
     UE_LOG(LogTemp, Log, TEXT("QSkill"));
 
     CapsuleHitCheck(50.f, 500.f);
-    //GetWorld()->SpawnActor(Projectile);
+
+    /*MulticastActiveSystem();*/
 }
 
 void ARangedPlayerCharacter::WSkill()
@@ -52,14 +62,16 @@ void ARangedPlayerCharacter::WSkill()
     SpawnTransform.SetLocation(GetActorLocation());
     SpawnTransform.SetRotation(FQuat(GetActorRotation()));
     UGameplayStatics::FinishSpawningActor(NewProjectile, SpawnTransform);
-
-    //CapsuleHitCheck(50.f, 500.f);
-    //GetWorld()->SpawnActor(Projectile);
 }
 
-//void ARangedPlayerCharacter::SpawnProjecttile_Implementation()
+//void ARangedPlayerCharacter::MulticastActiveSystem_Implementation()
 //{
+//    NiagaraComponent->ReinitializeSystem();
 //
-//    GetWorld()->SpawnActor<AActor>(Projectile, GetActorLocation(), GetActorRotation());
+//    NiagaraComponent->SetWorldLocation(GetActorLocation());
 //
+//    FRotator NewRotator(0.f, GetActorRotation().Yaw - 90.f, 0.f);
+//    NiagaraComponent->SetRelativeRotation(NewRotator);
+//    NiagaraComponent->ActivateSystem();
 //}
+

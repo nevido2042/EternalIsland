@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UProjectileMovementComponent* ProjectileMovementComponent;
 
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* NiagaraComponent;
+
 public:
 	void SetOwnerActor(AActor* InActor);
 

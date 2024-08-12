@@ -297,6 +297,12 @@ void ADefaultPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 
+	if (GraphicSettingWidgetAsset)
+	{
+		GraphicSettingWidget = CreateWidget(GetWorld(), GraphicSettingWidgetAsset);
+		GraphicSettingWidget->AddToViewport();
+	}
+
 	if (MainWidgetAsset)
 	{
 		MainWidget = CreateWidget(GetWorld(), MainWidgetAsset);

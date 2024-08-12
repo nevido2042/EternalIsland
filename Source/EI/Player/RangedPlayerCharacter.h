@@ -19,7 +19,7 @@ protected:
 
 	ARangedPlayerCharacter();
 
-	//virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 	virtual void NormalAttack(APawn* InTarget) override;
 
@@ -30,6 +30,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> Projectile;
 
+	//UPROPERTY(EditAnywhere)
+	//class UNiagaraComponent* NiagaraComponent;
+
+
+	/*UFUNCTION(NetMulticast, Reliable)
+	void MulticastActiveSystem();
+	void MulticastActiveSystem_Implementation();*/
 
 	/*UFUNCTION(Server, Reliable)
 	void SpawnProjecttile();
