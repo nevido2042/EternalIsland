@@ -4,6 +4,7 @@
 #include "SelectPlayerController.h"
 #include "UI/CharacterSelectWidget.h"
 #include "SelectPlayerCharacter.h"
+#include "../EIGameInstance.h"
 
 ASelectPlayerController::ASelectPlayerController()
 {
@@ -41,11 +42,11 @@ void ASelectPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	//if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-	//{
-	//	//InputComponent->BindAction(TEXT("MouseClick"), EInputEvent::IE_Pressed,
-	//	//	this, &ASelectPlayerController::MousePick);
-	//}
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+	{
+		InputComponent->BindAction(TEXT("MouseClick"), EInputEvent::IE_Pressed,
+			this, &ASelectPlayerController::MousePick);
+	}
 }
 
 void ASelectPlayerController::Tick(float DeltaTime)
@@ -62,55 +63,54 @@ void ASelectPlayerController::GetLifetimeReplicatedProps(
 	//DOREPLIFETIME(ASelectPlayerController, mSelectJob);
 }
 
-//void ASelectPlayerController::MousePick()
-//{
-//	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-//	{
-//		PickCharacter();
-//	}
-//}
-//
-//void ASelectPlayerController::PickCharacter()
-//{
-//	FHitResult	result;
-//
-//	bool Collision = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel3,
-//		false, result);
-//
-//	if (Collision)
-//	{
-//		ASelectPlayerCharacter* PickActor = Cast<ASelectPlayerCharacter>(result.GetActor());
-//
-//		if (IsValid(PickActor))
-//		{
-//			mSelectJob = PickActor->GetPlayerJob();
-//
-//			//SendSelectJob(mSelectJob);
-//
-//			USAC1GameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
-//
-//			if (IsValid(GameInst))
-//			{
-//				// Å¬¶óÀÌ¾ðÆ®°¡ °¡Áö°í ÀÖ´Â GameInstÀÇ SelectJobÀ» º¯°æÇÑ´Ù.
-//				GameInst->ChangeSelectJob(mSelectJob);
-//			}
-//
-//			mSelectUIWidget->EnableStartButton(true);
-//		}
-//	}
-//
-//	else
-//	{
-//		mSelectJob = EPlayerJob::None;
-//		mSelectUIWidget->EnableStartButton(false);
-//	}
-//}
-//
+void ASelectPlayerController::MousePick()
+{
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+	{
+		PickCharacter();
+	}
+}
+
+void ASelectPlayerController::PickCharacter()
+{
+	FHitResult	result;
+
+	bool Collision = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2,
+		false, result);
+
+	if (Collision)
+	{
+		ASelectPlayerCharacter* PickActor = Cast<ASelectPlayerCharacter>(result.GetActor());
+
+		if (IsValid(PickActor))
+		{
+			mSelectJob = PickActor->GetPlayerJob();
+
+			//SendSelectJob(mSelectJob);
+
+			UEIGameInstance* GameInst = GetWorld()->GetGameInstance<UEIGameInstance>();
+			
+			if (IsValid(GameInst))
+			{
+				// í´ë¼ì´ì–¸íŠ¸ê°€ ê°€ì§€ê³  ìžˆëŠ” GameInstì˜ SelectJobì„ ë³€ê²½í•œë‹¤.
+				GameInst->ChangeSelectJob(mSelectJob);
+			}
+			
+			mSelectUIWidget->EnableStartButton(true);
+		}
+	} 
+	else
+	{
+		mSelectJob = EPlayerJob::None;
+		mSelectUIWidget->EnableStartButton(false);
+	}
+}
+
 //void ASelectPlayerController::SendSelectJob_Implementation(EPlayerJob Job)
 //{
 //	mSelectJob = Job;
 //
-//	USAC1GameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
+//	UEIGameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
 //
 //	if (IsValid(GameInst))
 //	{

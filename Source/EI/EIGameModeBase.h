@@ -16,5 +16,8 @@ class EI_API AEIGameModeBase : public AGameModeBase
 
 public:
 	AEIGameModeBase();
+
+	virtual void BeginPlay() override;
+
 	
 };

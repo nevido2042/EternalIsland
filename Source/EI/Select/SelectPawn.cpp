@@ -9,6 +9,12 @@ ASelectPawn::ASelectPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	mCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+
+	SetRootComponent(mCamera);
+
+	mCamera->AddRelativeLocation(FVector(0.0, 0.0, 70.0));
+
 }
 
 // Called when the game starts or when spawned

@@ -24,7 +24,7 @@ protected:
 	class UCharacterSelectWidget* mSelectUIWidget;
 
 	//UPROPERTY(ReplicatedUsing = OnRep_SelectJob)
-	//EPlayerJob	mSelectJob;
+	EPlayerJob	mSelectJob;
 
 	FString		mID;
 
@@ -53,8 +53,8 @@ public:
 
 private:
 	void MousePick();
-//	void PickCharacter();
-//
+	void PickCharacter();
+
 //private:
 //	// Reliable, UnReliable
 //	UFUNCTION(BlueprintCallable, Server, Reliable)

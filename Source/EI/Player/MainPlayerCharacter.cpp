@@ -209,14 +209,11 @@ void AMainPlayerCharacter::CapsuleHitCheck(float Radius , float Height)
 
 void AMainPlayerCharacter::LookAtMousePos(const FVector& TargetLocation)
 {
-		FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-		LookAtRotator.Pitch = 0.f; // Pitch를 0으로 고정
-		LookAtRotator.Roll = 0.f;  // Roll을 0으로 고정
-		SetActorRotation(LookAtRotator);
-	//UE_LOG(LogTemp, Log, TEXT("LookAtMousePos"));
-	//FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-	//LookAtRotator = FRotator(0.f, LookAtRotator.Yaw, 0.f);
-	//SetActorRotation(LookAtRotator);
+	FRotator LookAtRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	LookAtRotator.Pitch = 0.f; // Pitch를 0으로 고정
+	LookAtRotator.Roll = 0.f;  // Roll을 0으로 고정
+	SetActorRotation(LookAtRotator);
+
 }
 
 void AMainPlayerCharacter::MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage)
@@ -348,6 +345,7 @@ void AMainPlayerCharacter::Tick(float DeltaTime)
 	{
 		FollowPath(DeltaTime);
 	}
+
 }
 
 void AMainPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

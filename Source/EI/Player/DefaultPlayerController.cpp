@@ -4,7 +4,7 @@
 #include "DefaultPlayerController.h"
 #include "MainPlayerCharacter.h"
 #include "Engine/World.h"
-
+#include "Kismet/KismetMathLibrary.h"
 #include "Blueprint/UserWidget.h"
 
 ADefaultPlayerController::ADefaultPlayerController()
@@ -154,82 +154,53 @@ void ADefaultPlayerController::OnThirdSkillClicked()
 	//StopMovement();
 }
 
-//void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
-//{
-//	switch (InSkill)
-//	{
-//	case ESkill::NONE:
-//		break;
-//	case ESkill::Q:
-//	{
-//		if (ControlledCharacter)
-//		{
-//			FVector ClickLocation = GetMouseLocation();
-//			ControlledCharacter->LookAtMousePos(ClickLocation);
-//			ServerQSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
-//		}
-//		break;
-//	}
-//	case ESkill::W:
-//	{
-//		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
-//		if (ControlledCharacter)
-//		{
-//			FVector ClickLocation = GetMouseLocation();
-//			// 로그 출력: 클릭 위치 확인
-//			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
-//
-//			ServerWSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
-//		}
-//		break;
-//	}
-//		
-//	case ESkill::E:
-//		break;
-//	default:
-//		break;
-//	}
-//
-//	SelectSkill = ESkill::NONE;
-//}
-
 void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 {
-	FVector ClickLocation = GetMouseLocation();
-
-	if (ControlledCharacter)
+	switch (InSkill)
 	{
-
-		UE_LOG(LogTemp, Log, TEXT("ClickLocation on ActiveSkill: %s"), *ClickLocation.ToString());
-
-		// 클라이언트에서 먼저 회전 강제 적용
-		ControlledCharacter->LookAtMousePos(ClickLocation);
-
-		// 서버에 회전 및 스킬 사용 요청
-		switch (InSkill)
+	case ESkill::NONE:
+		break;
+	case ESkill::Q:
+	{
+		if (ControlledCharacter)
 		{
-		case ESkill::NONE:
-			break;
+			FVector ClickLocation = GetMouseLocation();
 
-		case ESkill::Q:
+			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+			{
+				ControlledCharacter->LookAtMousePos(ClickLocation);
+			}
 			ServerQSkill(ClickLocation);
-			break;
 
-		case ESkill::W:
-			ServerWSkill(ClickLocation);
-			break;
-
-		case ESkill::E:
-			break;
-
-		default:
-			break;
 		}
-
-		// 선택된 스킬 초기화
-		SelectSkill = ESkill::NONE;
+		break;
 	}
+	case ESkill::W:
+	{
+		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
+		if (ControlledCharacter)
+		{
+			FVector ClickLocation = GetMouseLocation();
+			// 로그 출력: 클릭 위치 확인
+			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
+			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+			{
+				ControlledCharacter->LookAtMousePos(ClickLocation);
+			}
+			ServerWSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
+		}
+		break;
+	}
+		
+	case ESkill::E:
+		break;
+	default:
+		break;
+	}
+
+	SelectSkill = ESkill::NONE;
 }
+
 
 void ADefaultPlayerController::CheckTargetDist(APawn* InTarget)
 {
@@ -384,9 +355,10 @@ void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickL
 	if (ControlledCharacter)
 	{
 		ControlledCharacter->LookAtMousePos(ClickLocation);
-		//MulticastServerQSkill(ClickLocation);
-		//StopMovement();
+
+		ClientQSkill(ClickLocation); // 클라이언트에서도 스킬 발사 효과 적용
 		ControlledCharacter->QSkill();
+
 	}
 }
 
@@ -396,13 +368,12 @@ bool ADefaultPlayerController::ServerQSkill_Validate(const FVector& ClickLocatio
 }
 
 
-void ADefaultPlayerController::MulticastServerQSkill_Implementation(const FVector& ClickLocation)
+void ADefaultPlayerController::ClientQSkill_Implementation(const FVector& ClickLocation)
 {
 	if (ControlledCharacter)
 	{
 		UE_LOG(LogTemp, Log, TEXT("MulticastQSkill called on client"));
 		ControlledCharacter->LookAtMousePos(ClickLocation);
-		//ControlledCharacter->NormalAttack();
 	}
 }
 
@@ -443,7 +414,6 @@ void ADefaultPlayerController::ServerWSkill_Implementation(const FVector& ClickL
 		StopMovement();
 		ControlledCharacter->LookAtMousePos(ClickLocation);
 		ControlledCharacter->WSkill();
-		//MulticastNormalAttack(ClickLocation);
 	}
 }
 

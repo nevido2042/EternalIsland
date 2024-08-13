@@ -27,3 +27,8 @@ AEIGameModeBase::AEIGameModeBase()
 	}
 
 }
+
+void AEIGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+}
