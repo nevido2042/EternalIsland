@@ -358,7 +358,7 @@ void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickL
 	{
 		ControlledCharacter->LookAtMousePos(ClickLocation);
 
-		ClientQSkill(ClickLocation); // 클라이언트에서도 스킬 발사 효과 적용
+		//ClientQSkill(ClickLocation); // 클라이언트에서도 스킬 발사 효과 적용
 		ControlledCharacter->QSkill();
 
 	}
@@ -387,6 +387,8 @@ FVector ADefaultPlayerController::GetMouseLocation()
 	// If we hit a surface, cache the location
 	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 	return bHitSuccessful ? Hit.Location : FVector::ZeroVector;
+
+
 }
 
 AActor* ADefaultPlayerController::GetClickActor()

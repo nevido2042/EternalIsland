@@ -28,7 +28,7 @@ void UCharacterSelectWidget::StartClick()
 	//FString	Option = FString::Printf(TEXT("Job=%d?ID=%s"), (int32)SelectJob,
 	//	*Ctrl->GetID());
 
-	//UGameplayStatics::OpenLevel(GetWorld(), TEXT("127.0.0.1:10002"), true, Option);
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("127.0.0.1:10002"));
 }
 
 void UCharacterSelectWidget::BackClick()
