@@ -16,7 +16,7 @@ void UCharacterSelectWidget::NativeConstruct()
 }
 
 void UCharacterSelectWidget::StartClick()
-{
+{ 
 	//UEIGameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
 
 	ASelectPlayerController* Ctrl = GetOwningPlayer<ASelectPlayerController>();

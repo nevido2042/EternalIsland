@@ -16,6 +16,10 @@ public:
 	ASelectPawn();
 
 protected:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent>	mCamera;
+
+protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

@@ -213,6 +213,7 @@ void AMainPlayerCharacter::LookAtMousePos(const FVector& TargetLocation)
 	LookAtRotator.Pitch = 0.f; // Pitch를 0으로 고정
 	LookAtRotator.Roll = 0.f;  // Roll을 0으로 고정
 	SetActorRotation(LookAtRotator);
+
 }
 
 void AMainPlayerCharacter::MulticastPlayAttackMontage_Implementation(UAnimMontage* Montage)

@@ -4,6 +4,7 @@
 #include "SelectPlayerController.h"
 #include "UI/CharacterSelectWidget.h"
 #include "SelectPlayerCharacter.h"
+#include "../EIGameInstance.h"
 
 ASelectPlayerController::ASelectPlayerController()
 {
@@ -41,11 +42,11 @@ void ASelectPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	//if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-	//{
-	//	//InputComponent->BindAction(TEXT("MouseClick"), EInputEvent::IE_Pressed,
-	//	//	this, &ASelectPlayerController::MousePick);
-	//}
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+	{
+		InputComponent->BindAction(TEXT("MouseClick"), EInputEvent::IE_Pressed,
+			this, &ASelectPlayerController::MousePick);
+	}
 }
 
 void ASelectPlayerController::Tick(float DeltaTime)
@@ -59,58 +60,57 @@ void ASelectPlayerController::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(ASelectPlayerController, mSelectJob);
+	DOREPLIFETIME(ASelectPlayerController, mSelectJob);
 }
 
-//void ASelectPlayerController::MousePick()
-//{
-//	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-//	{
-//		PickCharacter();
-//	}
-//}
-//
-//void ASelectPlayerController::PickCharacter()
-//{
-//	FHitResult	result;
-//
-//	bool Collision = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel3,
-//		false, result);
-//
-//	if (Collision)
-//	{
-//		ASelectPlayerCharacter* PickActor = Cast<ASelectPlayerCharacter>(result.GetActor());
-//
-//		if (IsValid(PickActor))
-//		{
-//			mSelectJob = PickActor->GetPlayerJob();
-//
-//			//SendSelectJob(mSelectJob);
-//
-//			USAC1GameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
-//
-//			if (IsValid(GameInst))
-//			{
-//				// Ŭ���̾�Ʈ�� ������ �ִ� GameInst�� SelectJob�� �����Ѵ�.
-//				GameInst->ChangeSelectJob(mSelectJob);
-//			}
-//
-//			mSelectUIWidget->EnableStartButton(true);
-//		}
-//	}
-//
-//	else
-//	{
-//		mSelectJob = EPlayerJob::None;
-//		mSelectUIWidget->EnableStartButton(false);
-//	}
-//}
-//
+void ASelectPlayerController::MousePick()
+{
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+	{
+		PickCharacter();
+	}
+}
+
+void ASelectPlayerController::PickCharacter()
+{
+	FHitResult	result;
+
+	bool Collision = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2,
+		false, result);
+
+	if (Collision)
+	{
+		ASelectPlayerCharacter* PickActor = Cast<ASelectPlayerCharacter>(result.GetActor());
+
+		if (IsValid(PickActor))
+		{
+			mSelectJob = PickActor->GetPlayerJob();
+
+			//SendSelectJob(mSelectJob);
+
+			UEIGameInstance* GameInst = GetWorld()->GetGameInstance<UEIGameInstance>();
+			
+			if (IsValid(GameInst))
+			{
+				// 클라이언트가 가지고 있는 GameInst의 SelectJob을 변경한다.
+				GameInst->ChangeSelectJob(mSelectJob);
+			}
+			
+			mSelectUIWidget->EnableStartButton(true);
+		}
+	} 
+	else
+	{
+		mSelectJob = EPlayerJob::None;
+		mSelectUIWidget->EnableStartButton(false);
+	}
+}
+
 //void ASelectPlayerController::SendSelectJob_Implementation(EPlayerJob Job)
 //{
 //	mSelectJob = Job;
 //
-//	USAC1GameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
+//	UEIGameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
 //
 //	if (IsValid(GameInst))
 //	{

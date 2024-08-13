@@ -165,12 +165,11 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 		if (ControlledCharacter)
 		{
 			FVector ClickLocation = GetMouseLocation();
-			//if (IsLocalController())
-			//{
-			//	UE_LOG(LogTemp, Log, TEXT("IsLocalController called on local client"));
-			//	ClientQSkill(ClickLocation);
-			//}
-			ServerQSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
+
+
+			ControlledCharacter->LookAtMousePos(ClickLocation);
+			ServerQSkill(ClickLocation);
+
 		}
 		break;
 	}
@@ -345,9 +344,10 @@ void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickL
 	if (ControlledCharacter)
 	{
 		ControlledCharacter->LookAtMousePos(ClickLocation);
-		ClientQSkill(ClickLocation);
-		//StopMovement();
+
+		ClientQSkill(ClickLocation); // 클라이언트에서도 스킬 발사 효과 적용
 		ControlledCharacter->QSkill();
+
 	}
 }
 
