@@ -21,7 +21,8 @@ public class EI : ModuleRules
             "Niagara",
             "LevelSequence",
             "Networking",
-            "Sockets"
+            "Sockets",
+            "UnrealEd"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });

@@ -3,9 +3,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameUserSettings.h"
 
+#if WITH_EDITOR
+#include "Editor.h"  // 또는 #include "Editor/EditorEngine.h"
+#endif
+
 void UGraphicsSettings::NativeConstruct()
 {
-    // ScreenModeDropdown 항목 추가 및 바인딩
+    // 화면 모드 드롭다운 항목 추가 및 바인딩
     if (ScreenModeDropdown)
     {
         ScreenModeDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnScreenModeSelectionChanged);
@@ -14,10 +18,14 @@ void UGraphicsSettings::NativeConstruct()
         ScreenModeDropdown->AddOption(TEXT("Windowed"));
         ScreenModeDropdown->AddOption(TEXT("Windowed Fullscreen"));
 
-        ScreenModeDropdown->SetSelectedOption(TEXT("Windowed"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            ScreenModeDropdown->SetSelectedOption(TEXT("Windowed"));  // 기본 선택
+        }
     }
 
-    // ResolutionDropdown 항목 추가 및 바인딩
+    // 해상도 드롭다운 항목 추가 및 바인딩
     if (ResolutionDropdown)
     {
         ResolutionDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnResolutionSelectionChanged);
@@ -27,10 +35,14 @@ void UGraphicsSettings::NativeConstruct()
         ResolutionDropdown->AddOption(TEXT("1280x720"));
         ResolutionDropdown->AddOption(TEXT("1920x1080"));
 
-        ResolutionDropdown->SetSelectedOption(TEXT("800x600"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            ResolutionDropdown->SetSelectedOption(TEXT("800x600"));  // 기본 선택
+        }
     }
 
-    // ShadowQualityDropdown 항목 추가 및 바인딩
+    // 그림자 품질 드롭다운 항목 추가 및 바인딩
     if (ShadowQualityDropdown)
     {
         ShadowQualityDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnShadowQualitySelectionChanged);
@@ -41,10 +53,14 @@ void UGraphicsSettings::NativeConstruct()
         ShadowQualityDropdown->AddOption(TEXT("Epic"));
         ShadowQualityDropdown->AddOption(TEXT("Cinematic"));
 
-        ShadowQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            ShadowQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // TextureQualityDropdown 항목 추가 및 바인딩
+    // 텍스처 품질 드롭다운 항목 추가 및 바인딩
     if (TextureQualityDropdown)
     {
         TextureQualityDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnTextureQualitySelectionChanged);
@@ -55,10 +71,14 @@ void UGraphicsSettings::NativeConstruct()
         TextureQualityDropdown->AddOption(TEXT("Epic"));
         TextureQualityDropdown->AddOption(TEXT("Cinematic"));
 
-        TextureQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            TextureQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // ReflectionQualityDropdown 항목 추가 및 바인딩
+    // 반사 품질 드롭다운 항목 추가 및 바인딩
     if (ReflectionQualityDropdown)
     {
         ReflectionQualityDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnReflectionQualitySelectionChanged);
@@ -69,10 +89,14 @@ void UGraphicsSettings::NativeConstruct()
         ReflectionQualityDropdown->AddOption(TEXT("Epic"));
         ReflectionQualityDropdown->AddOption(TEXT("Cinematic"));
 
-        ReflectionQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            ReflectionQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // ViewDistanceDropdown 항목 추가 및 바인딩
+    // 뷰 거리 드롭다운 항목 추가 및 바인딩
     if (ViewDistanceDropdown)
     {
         ViewDistanceDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnViewDistanceSelectionChanged);
@@ -83,10 +107,14 @@ void UGraphicsSettings::NativeConstruct()
         ViewDistanceDropdown->AddOption(TEXT("Epic"));
         ViewDistanceDropdown->AddOption(TEXT("Cinematic"));
 
-        ViewDistanceDropdown->SetSelectedOption(TEXT("Low"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            ViewDistanceDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // GlobalIlluminationDropdown 항목 추가 및 바인딩
+    // 전역 조명 드롭다운 항목 추가 및 바인딩
     if (GlobalIlluminationDropdown)
     {
         GlobalIlluminationDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnGlobalIlluminationSelectionChanged);
@@ -97,10 +125,14 @@ void UGraphicsSettings::NativeConstruct()
         GlobalIlluminationDropdown->AddOption(TEXT("Epic"));
         GlobalIlluminationDropdown->AddOption(TEXT("Cinematic"));
 
-        GlobalIlluminationDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            GlobalIlluminationDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // AntiAliasingDropdown 항목 추가 및 바인딩
+    // 안티 에일리어싱 드롭다운 항목 추가 및 바인딩
     if (AntiAliasingDropdown)
     {
         AntiAliasingDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnAntiAliasingSelectionChanged);
@@ -111,10 +143,14 @@ void UGraphicsSettings::NativeConstruct()
         AntiAliasingDropdown->AddOption(TEXT("Epic"));
         AntiAliasingDropdown->AddOption(TEXT("Cinematic"));
 
-        AntiAliasingDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            AntiAliasingDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // EffectsQualityDropdown 항목 추가 및 바인딩
+    // 이펙트 품질 드롭다운 항목 추가 및 바인딩
     if (EffectsQualityDropdown)
     {
         EffectsQualityDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnEffectsQualitySelectionChanged);
@@ -125,10 +161,14 @@ void UGraphicsSettings::NativeConstruct()
         EffectsQualityDropdown->AddOption(TEXT("Epic"));
         EffectsQualityDropdown->AddOption(TEXT("Cinematic"));
 
-        EffectsQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            EffectsQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // FoliageQualityDropdown 항목 추가 및 바인딩
+    // 식생 품질 드롭다운 항목 추가 및 바인딩
     if (FoliageQualityDropdown)
     {
         FoliageQualityDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnFoliageQualitySelectionChanged);
@@ -139,10 +179,14 @@ void UGraphicsSettings::NativeConstruct()
         FoliageQualityDropdown->AddOption(TEXT("Epic"));
         FoliageQualityDropdown->AddOption(TEXT("Cinematic"));
 
-        FoliageQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            FoliageQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 
-    // ShadingQualityDropdown 항목 추가 및 바인딩
+    // 쉐이딩 품질 드롭다운 항목 추가 및 바인딩
     if (ShadingQualityDropdown)
     {
         ShadingQualityDropdown->OnSelectionChanged.AddDynamic(this, &UGraphicsSettings::OnShadingQualitySelectionChanged);
@@ -153,7 +197,11 @@ void UGraphicsSettings::NativeConstruct()
         ShadingQualityDropdown->AddOption(TEXT("Epic"));
         ShadingQualityDropdown->AddOption(TEXT("Cinematic"));
 
-        ShadingQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        // 에디터 모드에서는 기본 선택값을 설정하지 않음
+        if (!GEditor)  // GEditor가 nullptr이 아니면 에디터 모드
+        {
+            ShadingQualityDropdown->SetSelectedOption(TEXT("Epic"));  // 기본 선택
+        }
     }
 }
 

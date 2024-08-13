@@ -176,12 +176,10 @@ void ACreepBase::FollowTarget()
 	if (MaxTraceDist < CheckTargetDist())
 	{
 		LostTarget();
-		return;
 	}
 	else if (AttackRange > CheckTargetDist())
 	{
 		ChangeState(EState::Attack);
-		return;
 	}
 
 	AAIController* AIController = Cast<AAIController>(GetController());
