@@ -166,8 +166,10 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 		{
 			FVector ClickLocation = GetMouseLocation();
 
-
-			ControlledCharacter->LookAtMousePos(ClickLocation);
+			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+			{
+				ControlledCharacter->LookAtMousePos(ClickLocation);
+			}
 			ServerQSkill(ClickLocation);
 
 		}
@@ -181,7 +183,10 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 			FVector ClickLocation = GetMouseLocation();
 			// 로그 출력: 클릭 위치 확인
 			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
-
+			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+			{
+				ControlledCharacter->LookAtMousePos(ClickLocation);
+			}
 			ServerWSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
 		}
 		break;

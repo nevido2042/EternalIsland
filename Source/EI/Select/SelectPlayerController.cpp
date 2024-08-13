@@ -60,7 +60,7 @@ void ASelectPlayerController::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASelectPlayerController, mSelectJob);
+	//DOREPLIFETIME(ASelectPlayerController, mSelectJob);
 }
 
 void ASelectPlayerController::MousePick()

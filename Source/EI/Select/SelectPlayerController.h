@@ -55,10 +55,10 @@ private:
 	void MousePick();
 	void PickCharacter();
 
-private:
-	// Reliable, UnReliable
-	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void SendSelectJob(EPlayerJob Job);
-	void SendSelectJob_Implementation(EPlayerJob Job);
+//private:
+//	// Reliable, UnReliable
+//	UFUNCTION(BlueprintCallable, Server, Reliable)
+//	void SendSelectJob(EPlayerJob Job);
+//	void SendSelectJob_Implementation(EPlayerJob Job);
 
 };
