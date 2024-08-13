@@ -178,6 +178,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> MainWidgetAsset;
 	UUserWidget* MainWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> GraphicSettingWidgetAsset;
+	UUserWidget* GraphicSettingWidget;
 public:
 	UUserWidget* GetMainWidget() { return MainWidget; }
 
