@@ -1,44 +1,65 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/ComboBoxString.h"
+#include "GameFramework/GameUserSettings.h"
 #include "GraphicsSettings.generated.h"
 
 /**
- * 
+ * UGraphicsSettings는 게임의 그래픽 설정을 조정하는 UI를 관리합니다.
  */
+
+class UComboBoxString;
+
 UCLASS()
 class EI_API UGraphicsSettings : public UUserWidget
 {
-	GENERATED_BODY()
-public:
-    virtual void NativeConstruct() override;
+    GENERATED_BODY()
 
 protected:
-    // UI 요소들
+    virtual void NativeConstruct() override;
+
+    // 드롭다운 위젯
     UPROPERTY(meta = (BindWidget))
-    class USlider* ResolutionSlider;
+    UComboBoxString* ScreenModeDropdown;
 
     UPROPERTY(meta = (BindWidget))
-    class UComboBoxString* ShadowQualityDropdown;
+    UComboBoxString* ResolutionDropdown;
 
     UPROPERTY(meta = (BindWidget))
-    class UComboBoxString* TextureQualityDropdown;
+    UComboBoxString* ShadowQualityDropdown;
 
     UPROPERTY(meta = (BindWidget))
-    class UComboBoxString* ReflectionQualityDropdown;
+    UComboBoxString* TextureQualityDropdown;
 
     UPROPERTY(meta = (BindWidget))
-    class UCheckBox* AntiAliasingCheckbox;
+    UComboBoxString* ReflectionQualityDropdown;
 
     UPROPERTY(meta = (BindWidget))
-    class UCheckBox* PostProcessingCheckbox;
+    UComboBoxString* ViewDistanceDropdown;
 
-    // UI 이벤트 처리 함수들
+    UPROPERTY(meta = (BindWidget))
+    UComboBoxString* GlobalIlluminationDropdown;
+
+    UPROPERTY(meta = (BindWidget))
+    UComboBoxString* AntiAliasingDropdown;
+
+    UPROPERTY(meta = (BindWidget))
+    UComboBoxString* EffectsQualityDropdown;
+
+    UPROPERTY(meta = (BindWidget))
+    UComboBoxString* FoliageQualityDropdown;
+
+    UPROPERTY(meta = (BindWidget))
+    UComboBoxString* ShadingQualityDropdown;
+
+    // 이벤트 핸들러
     UFUNCTION()
-    void OnResolutionSliderValueChanged(float Value);
+    void OnScreenModeSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnResolutionSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 
     UFUNCTION()
     void OnShadowQualitySelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
@@ -50,8 +71,20 @@ protected:
     void OnReflectionQualitySelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 
     UFUNCTION()
-    void OnAntiAliasingCheckboxChanged(bool bIsChecked);
+    void OnViewDistanceSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 
     UFUNCTION()
-    void OnPostProcessingCheckboxChanged(bool bIsChecked);
+    void OnGlobalIlluminationSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnAntiAliasingSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnEffectsQualitySelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnFoliageQualitySelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnShadingQualitySelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 };
