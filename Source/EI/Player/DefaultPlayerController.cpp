@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/GraphicsSettings.h"
 
 ADefaultPlayerController::ADefaultPlayerController()
 {
