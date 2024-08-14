@@ -2,6 +2,7 @@
 
 
 #include "CharacterSelectWidget.h"
+#include "EIGameInstance.h"
 #include "../SelectPlayerController.h"
 
 void UCharacterSelectWidget::NativeConstruct()
@@ -17,18 +18,18 @@ void UCharacterSelectWidget::NativeConstruct()
 
 void UCharacterSelectWidget::StartClick()
 { 
-	//UEIGameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
+	UEIGameInstance* GameInst = GetWorld()->GetGameInstance<UEIGameInstance>();
 
 	ASelectPlayerController* Ctrl = GetOwningPlayer<ASelectPlayerController>();
 
 	// GameInstance�� ������ �ִ� ���� ������ ���´�.
-	//EPlayerJob	SelectJob = GameInst->GetSelectJob();
+	EPlayerJob	SelectJob = GameInst->GetSelectJob();
 
 	// ������ �̿��Ͽ� �ɼ��� ������ش�.
 	//FString	Option = FString::Printf(TEXT("Job=%d?ID=%s"), (int32)SelectJob,
 	//	*Ctrl->GetID());
 
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("127.0.0.1:10002"));
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10001"));
 }
 
 void UCharacterSelectWidget::BackClick()

@@ -121,7 +121,7 @@ void ALoginPlayerController::SendClient_Implementation(bool LoginSuccess, const 
 		FString	Option = FString::Printf(TEXT("ID=%s"), *ID);
 
  
-		//UGameplayStatics::OpenLevel(GetWorld(), TEXT("127.0.0.1:10001"));
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10001"));
 	}
 
 	else

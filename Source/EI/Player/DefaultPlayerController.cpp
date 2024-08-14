@@ -54,8 +54,6 @@ void ADefaultPlayerController::SetupInputComponent()
 	{
 		// Setup mouse input events
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnInputStarted);
-		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnSetDestination);
-		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnSetDestination);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSetDestination);
 		
 		//평타
@@ -63,9 +61,6 @@ void ADefaultPlayerController::SetupInputComponent()
 
 		//스킬 발동
 		EnhancedInputComponent->BindAction(ActiveSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnActiveSkillClicked);
-		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Triggered, this, &ADefaultPlayerController::OnAttackTriggered);
-		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Completed, this, &ADefaultPlayerController::OnAttackReleased);
-		//EnhancedInputComponent->BindAction(SetAttackAction, ETriggerEvent::Canceled, this, &ADefaultPlayerController::OnAttackReleased);
 	
 		EnhancedInputComponent->BindAction(SetFirstSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnFirstSkillClicked);
 		EnhancedInputComponent->BindAction(SetSecondSkillAction, ETriggerEvent::Started, this, &ADefaultPlayerController::OnSecondSkillClicked);
@@ -167,13 +162,7 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 		if (ControlledCharacter)
 		{
 			FVector ClickLocation = GetMouseLocation();
-
-			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-			{
-				ControlledCharacter->LookAtMousePos(ClickLocation);
-			}
 			ServerQSkill(ClickLocation);
-
 		}
 		break;
 	}
@@ -344,23 +333,17 @@ void ADefaultPlayerController::MulticastNormalAttack_Implementation(const FVecto
 	{
 		UE_LOG(LogTemp, Log, TEXT("MulticastNormalAttack called on client/server"));
 		ControlledCharacter->LookAtMousePos(ClickLocation);
-		//ControlledCharacter->NormalAttack();
-
 		LastAttackTime = GetWorld()->GetTimeSeconds();
 	}
 }
 
 void ADefaultPlayerController::ServerQSkill_Implementation(const FVector& ClickLocation)
 {
-	UE_LOG(LogTemp, Log, TEXT("ServerQSkill called on server"));
-	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
 	if (ControlledCharacter)
 	{
 		ControlledCharacter->LookAtMousePos(ClickLocation);
-
-		//ClientQSkill(ClickLocation); // 클라이언트에서도 스킬 발사 효과 적용
+		ClientQSkill(ClickLocation); // 클라이언트에서도 스킬 발사 효과 적용
 		ControlledCharacter->QSkill();
-
 	}
 }
 
@@ -387,8 +370,6 @@ FVector ADefaultPlayerController::GetMouseLocation()
 	// If we hit a surface, cache the location
 	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 	return bHitSuccessful ? Hit.Location : FVector::ZeroVector;
-
-
 }
 
 AActor* ADefaultPlayerController::GetClickActor()

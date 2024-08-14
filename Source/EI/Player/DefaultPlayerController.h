@@ -157,6 +157,7 @@ private:
 	void ServerQSkill_Implementation(const FVector& ClickLocation);
 	bool ServerQSkill_Validate(const FVector& ClickLocation);
 
+
 	UFUNCTION(Client, Reliable)
 	void ClientQSkill(const FVector& ClickLocation);
 	void ClientQSkill_Implementation(const FVector& ClickLocation);

@@ -7,6 +7,9 @@
 
 ARangedPlayerCharacter::ARangedPlayerCharacter()
 {
+    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
+
     AttackRange = 500.f;
     AttackSpeed = 2.f;
 
@@ -14,6 +17,16 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
 
     /*NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
     NiagaraComponent->SetupAttachment(RootComponent);*/
+}
+
+void ARangedPlayerCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+}
+
+void ARangedPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 void ARangedPlayerCharacter::BeginPlay()
