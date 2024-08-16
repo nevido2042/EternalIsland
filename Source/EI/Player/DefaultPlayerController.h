@@ -167,9 +167,9 @@ private:
 	void ServerWSkill_Implementation(const FVector& ClickLocation);
 	bool ServerWSkill_Validate(const FVector& ClickLocation);
 
-	//UFUNCTION(NetMulticast, Reliable)
-	//void MulticastServerWSkill(const FVector& ClickLocation);
-	//void MulticastServerWSkill_Implementation(const FVector& ClickLocation);
+	UFUNCTION(Client, Reliable)
+	void ClientWSkill(const FVector& ClickLocation);
+	void ClientWSkill_Implementation(const FVector& ClickLocation);
 
 
 public:
