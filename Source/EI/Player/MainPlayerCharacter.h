@@ -40,6 +40,18 @@ protected:
 	float AttackRange = 500.f;
 	float AttackSpeed = 1.f;
 
+protected:
+	FTimerHandle CooldownTimerHandle;
+	float ESkillCoolTime = 3.0f;
+	float RemainESkillCoolTime;
+	bool bIsCooldownActive = false;
+protected:
+	UFUNCTION()
+	void UpdateCooldown();
+	UFUNCTION()
+	void OnCooldownComplete();
+
+	void StartCooldown();
 
 public:
 	float GetAttackRange() { return AttackRange; }

@@ -182,13 +182,13 @@ public:
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> MainWidgetAsset;
-	UUserWidget* MainWidget;
+	class UMainWidget* MainWidget;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> GraphicSettingWidgetAsset;
 	UUserWidget* GraphicSettingWidget;
 public:
-	UUserWidget* GetMainWidget() { return MainWidget; }
+	class UMainWidget* GetMainWidget() { return MainWidget; }
 
 protected:
 	FTimerHandle QSkillTimerHandle;

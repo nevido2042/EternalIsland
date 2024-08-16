@@ -14,6 +14,8 @@
 #include "DrawDebugHelpers.h"
 #include "EI/Player/DefaultPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/MainWidget.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -53,7 +55,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	CameraBoom->TargetArmLength = 500.f;
 	CameraBoom->TargetArmLength = 1000.f;
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	CameraBoom->bDoCollisionTest = true; // Don't want to pull camera in when it collides with level
+	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
 	// Create a camera
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
@@ -87,6 +89,64 @@ void AMainPlayerCharacter::BeginPlay()
 	//}
 
 	mState = GetPlayerState<ADefaultPlayerState>();
+}
+void AMainPlayerCharacter::UpdateCooldown()
+{
+	if (RemainESkillCoolTime > 0.0f)
+	{
+		RemainESkillCoolTime -= 1.0f; // 1초 단위로 감소
+
+		UE_LOG(LogTemp, Log, TEXT("RemainESkillCoolTime: %f"), RemainESkillCoolTime);
+
+		if (RemainESkillCoolTime <= 0.0f)
+		{
+			OnCooldownComplete();
+		}
+
+		ADefaultPlayerController* DefaultPlayerController = Cast<ADefaultPlayerController>(GetController());
+		if (DefaultPlayerController)
+		{
+
+			UMainWidget* MainWidget = DefaultPlayerController->GetMainWidget();
+
+			if (MainWidget)
+			{
+				MainWidget->UpdateESkillCoolTimeBar(RemainESkillCoolTime / ESkillCoolTime);
+
+			}
+		}
+
+
+		// 필요에 따라 UI 업데이트
+		//UpdateCooldownUI(RemainESkillCoolTime / ESkillCoolTime);
+	}
+}
+void AMainPlayerCharacter::OnCooldownComplete()
+{
+	bIsCooldownActive = false;
+
+	// 타이머 핸들을 클리어하여 더 이상 호출되지 않도록 함
+	GetWorldTimerManager().ClearTimer(CooldownTimerHandle);
+
+	// 필요에 따라 UI 업데이트
+	// UpdateCooldownUI(1.0f); // 쿨타임 완료 시 UI를 완전한 상태로 설정
+}
+void AMainPlayerCharacter::StartCooldown()
+{
+	if (bIsCooldownActive)
+	{
+		// 쿨타임이 이미 진행 중이면 아무 작업도 하지 않음
+		return;
+	}
+
+	RemainESkillCoolTime = ESkillCoolTime;
+	bIsCooldownActive = true;
+
+	// 1초마다 UpdateCooldown() 함수를 호출하도록 타이머 설정
+	GetWorldTimerManager().SetTimer(CooldownTimerHandle, this, &AMainPlayerCharacter::UpdateCooldown, 1.0f, true);
+
+	// 쿨타임이 끝난 후 타이머를 클리어하는 함수 호출
+	//GetWorldTimerManager().SetTimer(CooldownTimerHandle, this, &AMainPlayerCharacter::OnCooldownComplete, ESkillCoolTime, false);
 }
 void AMainPlayerCharacter::NormalAttack(APawn* InTarget)
 {
@@ -147,6 +207,11 @@ void AMainPlayerCharacter::WSkill()
 
 void AMainPlayerCharacter::ESkill(const FVector& ClickLocation)
 {
+	/*if (!bIsCooldownActive)
+	{
+		StartCooldown();
+	}*/
+
 	bMoveToDestination = false;
 	PathPoints.Empty();
 }

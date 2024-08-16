@@ -32,15 +32,18 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> Projectile;
 
+	UPROPERTY(EditAnywhere)
+	class UParticleSystemComponent* ParticleSystemComponent;
+
 	//UPROPERTY(EditAnywhere)
 	//class UNiagaraComponent* NiagaraComponent;
 
 
-	/*UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void MulticastActiveSystem();
-	void MulticastActiveSystem_Implementation();*/
+	void MulticastActiveSystem_Implementation();
 
-	/*UFUNCTION(Server, Reliable)
-	void SpawnProjecttile();
-	void SpawnProjecttile_Implementation();*/
+	//UFUNCTION(Server, Reliable)
+	//void SpawnProjecttile();
+	//void SpawnProjecttile_Implementation();
 };

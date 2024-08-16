@@ -7,6 +7,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/GraphicsSettings.h"
+#include "UI/MainWidget.h"
 
 ADefaultPlayerController::ADefaultPlayerController()
 {
@@ -295,8 +296,18 @@ void ADefaultPlayerController::BeginPlay()
 
 	if (MainWidgetAsset)
 	{
-		MainWidget = CreateWidget(GetWorld(), MainWidgetAsset);
-		MainWidget->AddToViewport();
+		UUserWidget* UserWidget = CreateWidget(GetWorld(), MainWidgetAsset);
+		if (UserWidget)
+		{
+			MainWidget = Cast<UMainWidget>(UserWidget);
+
+			if (MainWidget)
+			{
+				MainWidget->AddToViewport();
+			}
+		}
+		
+		
 	}
 }
 

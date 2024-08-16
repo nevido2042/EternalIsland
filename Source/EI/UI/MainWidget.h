@@ -16,8 +16,13 @@ class EI_API UMainWidget : public UUserWidget
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UUserWidget* mHPBar;
+	class UUserWidget* mHPBar;	
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class USkillSlot* ESkillSlot;
 
 public:
 	void UpdateHPBar(float Value);
+	void UpdateESkillCoolTimeBar(float Value);
+
 };

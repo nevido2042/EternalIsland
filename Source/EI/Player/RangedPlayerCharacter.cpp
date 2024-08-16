@@ -14,6 +14,10 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
 
     /*NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
     NiagaraComponent->SetupAttachment(RootComponent);*/
+
+    ParticleSystemComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleSystemComponent"));
+    ParticleSystemComponent->SetupAttachment(RootComponent);
+    ParticleSystemComponent->SetIsReplicated(true);
 }
 
 void ARangedPlayerCharacter::BeginPlay()
@@ -68,17 +72,22 @@ void ARangedPlayerCharacter::WSkill()
 void ARangedPlayerCharacter::ESkill(const FVector& ClickLocation)
 {
     Super::ESkill(ClickLocation);
+
+    MulticastActiveSystem();
+
     SetActorLocation(ClickLocation);
 }
 
-//void ARangedPlayerCharacter::MulticastActiveSystem_Implementation()
-//{
-//    NiagaraComponent->ReinitializeSystem();
-//
-//    NiagaraComponent->SetWorldLocation(GetActorLocation());
-//
-//    FRotator NewRotator(0.f, GetActorRotation().Yaw - 90.f, 0.f);
-//    NiagaraComponent->SetRelativeRotation(NewRotator);
-//    NiagaraComponent->ActivateSystem();
-//}
+void ARangedPlayerCharacter::MulticastActiveSystem_Implementation()
+{
+    ParticleSystemComponent->ActivateSystem();
+
+    /*NiagaraComponent->ReinitializeSystem();
+
+    NiagaraComponent->SetWorldLocation(GetActorLocation());
+
+    FRotator NewRotator(0.f, GetActorRotation().Yaw - 90.f, 0.f);
+    NiagaraComponent->SetRelativeRotation(NewRotator);
+    NiagaraComponent->ActivateSystem();*/
+}
 
