@@ -26,8 +26,5 @@ public:
 	UFUNCTION()
 	void StartClick();
 
-	UFUNCTION()
-	void BackClick();
-
 	void EnableStartButton(bool Enable);
 };

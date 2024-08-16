@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "MainPlayerCharacter.h"
 #include "Projectile/Projectile.h"
 #include "RangedPlayerCharacter.generated.h"
@@ -15,10 +14,17 @@ class EI_API ARangedPlayerCharacter : public AMainPlayerCharacter
 {
 	GENERATED_BODY()
 
-protected:
-
+public:
 	ARangedPlayerCharacter();
 
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
 	virtual void BeginPlay() override;
 
 	virtual void NormalAttack(APawn* InTarget) override;

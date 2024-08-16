@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Player/MainPlayerCharacter.h"
 #include "MeleePlayerCharacter.generated.h"
 
@@ -14,8 +13,21 @@ class EI_API AMeleePlayerCharacter : public AMainPlayerCharacter
 {
 	GENERATED_BODY()
 	
+public:
 	AMeleePlayerCharacter();
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
 	virtual void NormalAttack(APawn* InTarget) override;
 
 	virtual void QSkill();

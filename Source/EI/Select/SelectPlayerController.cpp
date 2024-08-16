@@ -17,6 +17,10 @@ ASelectPlayerController::ASelectPlayerController()
 		mSelectUIClass = SelectUIClass.Class;
 }
 
+void ASelectPlayerController::OnRep_SelectJob()
+{
+}
+
 void ASelectPlayerController::BeginPlay() 
 {
 	Super::BeginPlay();
@@ -60,7 +64,7 @@ void ASelectPlayerController::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(ASelectPlayerController, mSelectJob);
+	DOREPLIFETIME(ASelectPlayerController, mSelectJob);
 }
 
 void ASelectPlayerController::MousePick()
@@ -68,6 +72,7 @@ void ASelectPlayerController::MousePick()
 	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
 	{
 		PickCharacter();
+		LOG(TEXT("MousePick"));
 	}
 }
 
@@ -86,7 +91,7 @@ void ASelectPlayerController::PickCharacter()
 		{
 			mSelectJob = PickActor->GetPlayerJob();
 
-			//SendSelectJob(mSelectJob);
+			SendSelectJob(mSelectJob);
 
 			UEIGameInstance* GameInst = GetWorld()->GetGameInstance<UEIGameInstance>();
 			
@@ -94,6 +99,7 @@ void ASelectPlayerController::PickCharacter()
 			{
 				// 클라이언트가 가지고 있는 GameInst의 SelectJob을 변경한다.
 				GameInst->ChangeSelectJob(mSelectJob);
+				LOG(TEXT("PickCharacter"));
 			}
 			
 			mSelectUIWidget->EnableStartButton(true);
@@ -116,5 +122,9 @@ void ASelectPlayerController::SendSelectJob_Implementation(EPlayerJob Job)
 	{
 		GameInst->ChangeSelectJob(mSelectJob);
 		LOG(TEXT("Change Job"));
+	}
+	else
+	{
+		LOG(TEXT("!GameInst"));
 	}
 }

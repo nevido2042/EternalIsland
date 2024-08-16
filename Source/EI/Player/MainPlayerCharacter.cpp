@@ -78,16 +78,6 @@ void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//APlayerController* PC = Cast<APlayerController>(GetController());
-	//if (PC)
-	//{
-	//	mState = PC->GetPlayerState<ADefaultPlayerState>();
-	//	if (!mState)
-	//	{
-	//		UE_LOG(LogTemp, Warning, TEXT("PlayerState is not valid in BeginPlay"));
-	//	}
-	//}
-
 	mState = GetPlayerState<ADefaultPlayerState>();
 }
 void AMainPlayerCharacter::UpdateCooldown()
@@ -254,22 +244,7 @@ void AMainPlayerCharacter::CapsuleHitCheck(float Radius , float Height)
 		return;
 	}
 
-	/*AMainPlayerCharacter* targetCharacter = Cast<AMainPlayerCharacter>(HitActor);
-	if (!IsValid(targetCharacter))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack - targetCharacter Is Not Valid"));
-		return;
-	}*/
-
-	//ADefaultPlayerState* targetState = targetCharacter->GetPlayerState<ADefaultPlayerState>();
-	//ADefaultPlayerState* targetState = Cast<ADefaultPlayerState>(targetCharacter->GetPlayerState());
 	ADefaultPlayerState* MyState = Cast<ADefaultPlayerState>(GetPlayerState());
-
-	/*if (!IsValid(targetState))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack - targetState Is Not Valid"));
-		return;
-	}*/
 
 	if (!MyState)
 	{
@@ -316,7 +291,6 @@ void AMainPlayerCharacter::DrawNomalAttackDebug(FVector CenterLocation, FQuat So
 void AMainPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void AMainPlayerCharacter::MoveToLocation(const FVector& Location)
@@ -398,15 +372,6 @@ void AMainPlayerCharacter::OnRep_PathPoints()
 	// 클라이언트에서 경로를 따라 이동 시작
 	bMoveToDestination = true;
 }
-
-//ADefaultPlayerState* AMainPlayerCharacter::GetPlayerState() const
-//{
-//	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
-//	{
-//		return Cast<ADefaultPlayerState>(PC->PlayerState);
-//	}
-//	return nullptr;
-//}
 
 
 // Called every frame

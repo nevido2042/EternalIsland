@@ -33,8 +33,6 @@ public:
 		return mState;
 	}
 
-//public:
-//	virtual ADefaultPlayerState* GetPlayerState() const;
 
 protected:
 	float AttackRange = 500.f;

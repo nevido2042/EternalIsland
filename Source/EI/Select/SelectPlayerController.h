@@ -23,7 +23,7 @@ protected:
 	TSubclassOf<UUserWidget> mSelectUIClass;
 	class UCharacterSelectWidget* mSelectUIWidget;
 
-	//UPROPERTY(ReplicatedUsing = OnRep_SelectJob)
+	UPROPERTY(ReplicatedUsing = OnRep_SelectJob)
 	EPlayerJob	mSelectJob;
 
 	FString		mID;
@@ -38,9 +38,9 @@ public:
 	{
 		return mID;
 	}
-//public:
-//	UFUNCTION()
-//	void OnRep_SelectJob();
+public:
+	UFUNCTION()
+	void OnRep_SelectJob();
 
 protected:
 	virtual void BeginPlay() override;

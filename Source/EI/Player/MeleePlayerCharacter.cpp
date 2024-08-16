@@ -5,8 +5,28 @@
 
 AMeleePlayerCharacter::AMeleePlayerCharacter()
 {
+    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
+
+    bReplicates = true;
+
     AttackRange = 200.f;
     AttackSpeed = 1.f;
+}
+
+void AMeleePlayerCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
+void AMeleePlayerCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+}
+
+void AMeleePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 void AMeleePlayerCharacter::NormalAttack(APawn* InTarget)
