@@ -17,7 +17,6 @@ class EI_API UCharacterSelectWidget : public UUserWidget
 	
 protected:
 	UButton* mStartButton;
-	UButton* mBackButton;
 
 public:
 	virtual void NativeConstruct();
