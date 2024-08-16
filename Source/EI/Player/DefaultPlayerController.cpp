@@ -14,6 +14,7 @@ ADefaultPlayerController::ADefaultPlayerController()
 	CachedDestination = FVector::ZeroVector;
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
+	bReplicates = true;
 }
 
 void ADefaultPlayerController::OnPossess(APawn* InPawn)

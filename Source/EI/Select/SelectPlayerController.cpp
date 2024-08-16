@@ -106,15 +106,15 @@ void ASelectPlayerController::PickCharacter()
 	}
 }
 
-//void ASelectPlayerController::SendSelectJob_Implementation(EPlayerJob Job)
-//{
-//	mSelectJob = Job;
-//
-//	UEIGameInstance* GameInst = GetWorld()->GetGameInstance<USAC1GameInstance>();
-//
-//	if (IsValid(GameInst))
-//	{
-//		GameInst->ChangeSelectJob(mSelectJob);
-//		LOG(TEXT("Change Job"));
-//	}
-//}
+void ASelectPlayerController::SendSelectJob_Implementation(EPlayerJob Job)
+{
+	mSelectJob = Job;
+
+	UEIGameInstance* GameInst = GetWorld()->GetGameInstance<UEIGameInstance>();
+
+	if (IsValid(GameInst))
+	{
+		GameInst->ChangeSelectJob(mSelectJob);
+		LOG(TEXT("Change Job"));
+	}
+}
