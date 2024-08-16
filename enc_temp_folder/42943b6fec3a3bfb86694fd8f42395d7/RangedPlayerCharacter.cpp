@@ -46,7 +46,6 @@ void ARangedPlayerCharacter::QSkill()
 
 void ARangedPlayerCharacter::WSkill()
 {
-    Super::WSkill();
     if (NormalAttackMontage)
     {
         MulticastPlayAttackMontage(NormalAttackMontage);
@@ -67,7 +66,6 @@ void ARangedPlayerCharacter::WSkill()
 
 void ARangedPlayerCharacter::ESkill(const FVector& ClickLocation)
 {
-    Super::ESkill(ClickLocation);
     SetActorLocation(ClickLocation);
 }
 

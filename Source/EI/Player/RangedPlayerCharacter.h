@@ -27,6 +27,8 @@ protected:
 
 	virtual void WSkill();
 
+	virtual void ESkill(const FVector& ClickLocation);
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> Projectile;
 

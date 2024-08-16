@@ -141,14 +141,10 @@ void AMainPlayerCharacter::QSkill()
 
 void AMainPlayerCharacter::WSkill()
 {
-	bMoveToDestination = false;
-	PathPoints.Empty();
 }
 
 void AMainPlayerCharacter::ESkill(const FVector& ClickLocation)
 {
-	bMoveToDestination = false;
-	PathPoints.Empty();
 }
 
 void AMainPlayerCharacter::CapsuleHitCheck(float Radius , float Height)

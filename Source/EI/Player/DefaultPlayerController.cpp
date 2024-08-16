@@ -189,12 +189,30 @@ void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 				ControlledCharacter->LookAtMousePos(ClickLocation);
 			}
 			ServerWSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
+			
 		}
+
 		break;
 	}
 		
 	case ESkill::E:
+	{
+		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
+		if (ControlledCharacter)
+		{
+			FVector ClickLocation = GetMouseLocation();
+			// 로그 출력: 클릭 위치 확인
+			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
+			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+			{
+				ControlledCharacter->LookAtMousePos(ClickLocation);
+			}
+			ServerESkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
+			
+		}
 		break;
+	}
+		
 	default:
 		break;
 	}
@@ -408,7 +426,7 @@ AActor* ADefaultPlayerController::GetClickActor()
 
 void ADefaultPlayerController::ServerWSkill_Implementation(const FVector& ClickLocation)
 {
-	UE_LOG(LogTemp, Log, TEXT("ServerQSkill called on server"));
+	UE_LOG(LogTemp, Log, TEXT("ServerWSkill called on server"));
 	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
 	if (ControlledCharacter)
 	{
@@ -419,6 +437,23 @@ void ADefaultPlayerController::ServerWSkill_Implementation(const FVector& ClickL
 }
 
 bool ADefaultPlayerController::ServerWSkill_Validate(const FVector& ClickLocation)
+{
+	return true;
+}
+
+void ADefaultPlayerController::ServerESkill_Implementation(const FVector& ClickLocation)
+{
+	UE_LOG(LogTemp, Log, TEXT("ServerESkill called on server"));
+	UE_LOG(LogTemp, Log, TEXT("ClickLocation on server: %s"), *ClickLocation.ToString());
+	if (ControlledCharacter)
+	{
+		StopMovement();
+		ControlledCharacter->LookAtMousePos(ClickLocation);
+		ControlledCharacter->ESkill(ClickLocation);
+	}
+}
+
+bool ADefaultPlayerController::ServerESkill_Validate(const FVector& ClickLocation)
 {
 	return true;
 }

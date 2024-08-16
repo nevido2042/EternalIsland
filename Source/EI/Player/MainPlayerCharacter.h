@@ -54,6 +54,8 @@ public:
 
 	virtual void WSkill();
 
+	virtual void ESkill(const FVector& ClickLocation);
+
 	void CapsuleHitCheck(float Radius = 100.f, float Height = 100.f);
 
 	void LookAtMousePos(const FVector& TargetLocation);
