@@ -20,9 +20,14 @@ void UCharacterSelectWidget::StartClick()
 
 	ASelectPlayerController* Ctrl = GetOwningPlayer<ASelectPlayerController>();
 
+	// GameInstance가 가지고 있는 선택 직업을 얻어온다.
 	EPlayerJob	SelectJob = GameInst->GetSelectJob();
 
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10001"));
+	// 직업을 이용하여 옵션을 만들어준다.
+	FString	Option = FString::Printf(TEXT("Job=%d?ID=%s"), (int32)SelectJob,
+		*Ctrl->GetID());
+
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("14.37.126.86:10002"));
 }
 
 void UCharacterSelectWidget::EnableStartButton(bool Enable)

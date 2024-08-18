@@ -41,6 +41,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UParticleSystemComponent* ParticleSystemComponent;
 
+	FString			mLoginID;
+	EPlayerJob		mJob;
+
 	//UPROPERTY(EditAnywhere)
 	//class UNiagaraComponent* NiagaraComponent;
 

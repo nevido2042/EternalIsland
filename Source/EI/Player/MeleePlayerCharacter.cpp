@@ -8,6 +8,18 @@ AMeleePlayerCharacter::AMeleePlayerCharacter()
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
+
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh>	MeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.Kwang_GDC'"));
+
+    if (MeshAsset.Succeeded())
+    {
+        // 위에서 불러온 SkeletalMesh를 Character 클래스가 가지고 있는
+        // SkeletalMeshComponent에 지정해준다.
+        GetMesh()->SetSkeletalMesh(MeshAsset.Object);
+    }
+
+    mJob = EPlayerJob::Swordsman;
+
     bReplicates = true;
 
     AttackRange = 200.f;

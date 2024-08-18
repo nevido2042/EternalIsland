@@ -37,7 +37,17 @@ public:
 protected:
 	float AttackRange = 500.f;
 	float AttackSpeed = 1.f;
+	EPlayerJob		mJob;
 
+public:
+	void SetPlayerInfo(EPlayerJob Job)
+	{
+		mJob = Job;
+	}
+public:
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SendPlayerInfo(EServerType Type);
+	void SendPlayerInfo_Implementation(EServerType Type);
 protected:
 	FTimerHandle CooldownTimerHandle;
 	float ESkillCoolTime = 3.0f;

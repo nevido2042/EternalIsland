@@ -16,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/MainWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "Network/NetworkManager.h"
 
 // Sets default values
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -79,6 +80,32 @@ void AMainPlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	mState = GetPlayerState<ADefaultPlayerState>();
+}
+void AMainPlayerCharacter::SendPlayerInfo_Implementation(EServerType Type)
+{
+	int32	Header = 0, Length = 0;
+	uint8	Packet[1016] = {};
+
+	ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(GetController());
+
+	FString	ID = Ctrl->GetID();
+
+	int32	IDLength = ID.Len();
+
+	FMemory::Memcpy(Packet, &IDLength, sizeof(int32));
+	Length += sizeof(int32);
+
+	FMemory::Memcpy(Packet + Length, *ID, sizeof(TCHAR) * IDLength);
+	Length += (sizeof(TCHAR) * IDLength);
+
+	FMemory::Memcpy(Packet + Length, &mJob, sizeof(EPlayerJob));
+	Length += sizeof(EPlayerJob);
+
+	FMemory::Memcpy(Packet + Length, &Type, sizeof(EServerType));
+	Length += sizeof(EServerType);
+
+	CNetworkManager::GetInst()->Send(TEXT("DedicateServer"), (int32)EPacketHeader::PlayerInfo_Send,
+		Length, Packet);
 }
 void AMainPlayerCharacter::UpdateCooldown()
 {
