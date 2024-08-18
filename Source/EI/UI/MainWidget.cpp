@@ -13,6 +13,15 @@ void UMainWidget::UpdateHPBar(float Value)
 
 void UMainWidget::UpdateESkillCoolTimeBar(float Value)
 {
-	//USkillSlot* SkillSlot = Cast<USkillSlot>(ESkillSlot);
-	ESkillSlot->UpdateCoolTimeBar(Value);
+	if (IsValid(ESkillSlot))
+	{
+		USkillSlot* SkillSlot = Cast<USkillSlot>(ESkillSlot);
+		if (SkillSlot)
+		{
+			//USkillSlot* SkillSlot = Cast<USkillSlot>(ESkillSlot);
+			SkillSlot->UpdateCoolTimeBar(Value);
+		}
+
+	}
+
 }

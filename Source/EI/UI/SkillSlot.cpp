@@ -12,5 +12,9 @@ void USkillSlot::NativeOnInitialized()
 
 void USkillSlot::UpdateCoolTimeBar(float Value)
 {
-	CoolTimeBar->SetPercent(Value);
+	if (IsValid(CoolTimeBar))
+	{
+		CoolTimeBar->SetPercent(Value);
+
+	}
 }
