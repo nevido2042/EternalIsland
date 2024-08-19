@@ -3,6 +3,10 @@
 
 #include "LoginGameMode.h"
 #include "LoginPlayerController.h"
+#include "Network/NetworkManager.h"
+#include "Network/ReceiveThread.h"
+#include "Network/NetworkSession.h"
+#include "Network/PacketQueue.h"
 
 ALoginGameMode::ALoginGameMode()
 {
@@ -13,6 +17,22 @@ ALoginGameMode::ALoginGameMode()
 void ALoginGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
+
+	CNetworkManager::GetInst()->SetServerType(EServerType::Login);
+
+	CNetworkManager::GetInst()->Connect(TEXT("DedicateServer"),
+		TEXT("192.168.0.118"), 10020);
+
+	FThreadInfo* Info = CNetworkManager::GetInst()->CreateThread<CReceiveThread>(TEXT("DedicateServerThread"));
+
+	((CReceiveThread*)Info->Worker)->SetSession(CNetworkManager::GetInst()->FindSession(TEXT("DedicateServer")));
+
+	mQueue = CNetworkManager::GetInst()->FindPacketQueue(TEXT("DedicateServerThread_Queue"));
+
+	// 일시정지 되어 있는 스레드를 동작시킨다.
+	CNetworkManager::GetInst()->SuspendThread(TEXT("DedicateServerThread"), false);
+
+	CNetworkManager::GetInst()->SendServerType(TEXT("DedicateServer"));
 }
 
 void ALoginGameMode::BeginPlay()

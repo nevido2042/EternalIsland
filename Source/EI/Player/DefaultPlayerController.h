@@ -40,6 +40,34 @@ public:
 
 	TObjectPtr<APawn> ControlledPawn;
 
+protected:
+	UPROPERTY(Replicated)
+	FString		mID;
+
+	UPROPERTY(Replicated)
+	EPlayerJob	mJob;
+
+public:
+	void SetJob(EPlayerJob Job)
+	{
+		mJob = Job;
+	}
+
+	const FString& GetID()
+	{
+		return mID;
+	}
+
+	void SetID(const FString& ID)
+	{
+		mID = ID;
+	}
+
+	//UFUNCTION(BlueprintCallable, Client, Reliable)
+	//void ClientLevelTransition(EServerType Type);
+	//void ClientLevelTransition_Implementation(EServerType Type);
+
+
 public:
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -192,4 +220,6 @@ public:
 
 protected:
 	FTimerHandle QSkillTimerHandle;
+
+
 };

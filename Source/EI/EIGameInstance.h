@@ -15,7 +15,7 @@ class EI_API UEIGameInstance : public UGameInstance
 	GENERATED_BODY()
 public:
 	UEIGameInstance();
-	//~UEIGameInstance();
+	~UEIGameInstance();
 
 protected:
 	EPlayerJob	mSelectJob;
@@ -34,6 +34,6 @@ public:
 public:
 	virtual void Init();
 
-//protected:
-//	virtual void FinishDestroy() override;
+protected:
+	virtual void FinishDestroy() override;
 };

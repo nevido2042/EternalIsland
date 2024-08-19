@@ -24,6 +24,7 @@
 #include "SocketSubsystem.h"
 #include "Net/UnrealNetwork.h"
 
+// 멀티쓰레드 관련
 #include "HAL/Runnable.h"
 #include "HAL/RunnableThread.h"
 
@@ -62,14 +63,14 @@ enum class EPlayerJob : uint8
 	Swordsman,
 	Gunslinger,
 	End
-
 };
 
 UENUM()
 enum class EServerType : uint32
 {
 	Login,
-	TestMap
+	Select,
+	Main
 };
 
 

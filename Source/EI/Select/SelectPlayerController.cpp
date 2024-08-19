@@ -10,6 +10,7 @@ ASelectPlayerController::ASelectPlayerController()
 {
 	bReplicates = true;
 	bShowMouseCursor = true;
+	bAlwaysRelevant = true;
 
 	static ConstructorHelpers::FClassFinder<UUserWidget>	SelectUIClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Game/UI/UI_CharacterSelect.UI_CharacterSelect_C'"));
 

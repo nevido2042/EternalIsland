@@ -30,6 +30,7 @@ bool CReceiveThread::Init()
     return true;
 }
 
+// 얘는 무조건 재정의 해야한다.
 uint32 CReceiveThread::Run()
 {
     do

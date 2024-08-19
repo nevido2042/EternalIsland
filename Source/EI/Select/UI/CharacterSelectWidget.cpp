@@ -20,9 +20,14 @@ void UCharacterSelectWidget::StartClick()
 
 	ASelectPlayerController* Ctrl = GetOwningPlayer<ASelectPlayerController>();
 
+	// GameInstance�� ������ �ִ� ���� ������ ���´�.
 	EPlayerJob	SelectJob = GameInst->GetSelectJob();
 
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10001"));
+	// ������ �̿��Ͽ� �ɼ��� ������ش�.
+	FString	Option = FString::Printf(TEXT("Job=%d?ID=%s"), (int32)SelectJob,
+		*Ctrl->GetID());
+
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10002"));
 }
 
 void UCharacterSelectWidget::EnableStartButton(bool Enable)

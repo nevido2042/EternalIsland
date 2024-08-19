@@ -10,6 +10,18 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh>	MeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonRevenant/Characters/Heroes/Revenant/Meshes/Revenant.Revenant'"));
+
+    if (MeshAsset.Succeeded())
+    {
+        // 위에서 불러온 SkeletalMesh를 Character 클래스가 가지고 있는
+        // SkeletalMeshComponent에 지정해준다.
+        GetMesh()->SetSkeletalMesh(MeshAsset.Object);
+    }
+
+    mJob = EPlayerJob::Gunslinger;
+
+
     AttackRange = 500.f;
     AttackSpeed = 2.f;
 

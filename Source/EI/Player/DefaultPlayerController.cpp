@@ -37,6 +37,28 @@ void ADefaultPlayerController::OnPossess(APawn* InPawn)
 	}
 }
 
+//void ADefaultPlayerController::ClientLevelTransition_Implementation(EServerType Type)
+//{
+//	// 레벨을 전환한다.
+//	FString	Option = FString::Printf(TEXT("Job=%d?ID=%s"), (int32)mJob,
+//		*GetID());
+//
+//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+//		FString::Printf(TEXT("Option : %s ServerType : %d"),
+//			*Option, (int32)Type));
+//
+//	switch (Type)
+//	{
+//	case EServerType::Login:
+//		break;
+//	case EServerType::Select:
+//		break;
+//	case EServerType::Main:
+//		UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10002"), true, Option);
+//		break;
+//	}
+//}
+//
 void ADefaultPlayerController::EnableInput(APlayerController* PlayerController)
 {
 	Super::EnableInput(this);
@@ -46,6 +68,8 @@ void ADefaultPlayerController::DisableInput(APlayerController* PlayerController)
 	Super::DisableInput(this);
 
 }
+
+
 void ADefaultPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -451,4 +475,7 @@ void ADefaultPlayerController::ClientWSkill_Implementation(const FVector& ClickL
 void ADefaultPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADefaultPlayerController, mID);
+	DOREPLIFETIME(ADefaultPlayerController, mJob);
 }

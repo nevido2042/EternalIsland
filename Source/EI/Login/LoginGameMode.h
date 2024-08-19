@@ -21,7 +21,7 @@ public:
 protected:
 	UPROPERTY()
 	TMap<FString, FJoinInfo>	mJoinInfoMap;
-	//class CPacketQueue* mQueue;
+	class CPacketQueue* mQueue;
 
 public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
