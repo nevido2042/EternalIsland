@@ -13,8 +13,22 @@
 AEIGameModeBase::AEIGameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	DefaultPawnClass = AMeleePlayerCharacter::StaticClass();
-	PlayerControllerClass = ADefaultPlayerController::StaticClass();
+
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
+	if (PlayerPawnBPClass.Class != nullptr)
+	{
+		DefaultPawnClass = PlayerPawnBPClass.Class;
+	}
+
+	//PlayerControllerClass = ADefaultPlayerController::StaticClass();
+	static ConstructorHelpers::FClassFinder<APlayerController> ControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_DefaultPlayerController.BP_DefaultPlayerController_C'"));
+	if (IsValid(ControllerClass.Class))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AEIGameModeBase PlayerCharacter FClassFinder Success"));
+		PlayerControllerClass = ControllerClass.Class;
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("AEIGameModeBase PlayerCharacter FClassFinder Fail"));
 }
 
 void AEIGameModeBase::BeginPlay()
@@ -29,7 +43,7 @@ void AEIGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 	CNetworkManager::GetInst()->SetServerType(EServerType::Main);
 
 	CNetworkManager::GetInst()->Connect(TEXT("DedicateServer"),
-		TEXT("14.37.126.86"), 10020);
+		TEXT("192.168.0.118"), 10020);
 
 	FThreadInfo* Info = CNetworkManager::GetInst()->CreateThread<CReceiveThread>(TEXT("DedicateServerThread"));
 
@@ -37,7 +51,7 @@ void AEIGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 
 	mQueue = CNetworkManager::GetInst()->FindPacketQueue(TEXT("DedicateServerThread_Queue"));
 
-	// ÀÏ½ÃÁ¤Áö µÇ¾î ÀÖ´Â ½º·¹µå¸¦ µ¿ÀÛ½ÃÅ²´Ù.
+	// ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½Û½ï¿½Å²ï¿½ï¿½.
 	CNetworkManager::GetInst()->SuspendThread(TEXT("DedicateServerThread"), false);
 
 	CNetworkManager::GetInst()->SendServerType(TEXT("DedicateServer"));
@@ -54,7 +68,7 @@ APlayerController* AEIGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteR
 
 	LOGSTRING(Options);
 
-	// ¿É¼ÇÁ¤º¸ ÀÐ¾î¿À±â
+	// ï¿½É¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½ï¿½
 	int32	CommandJob;
 
 	if (FParse::Value(*Options, TEXT("Job="), CommandJob))
@@ -63,14 +77,35 @@ APlayerController* AEIGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteR
 
 		LOG(TEXT("Job : %d"), (int32)CommandJob);
 
+		UClass* PlayerPawnClass = nullptr;
+
 		switch (Job)
 		{
+		//case EPlayerJob::Swordsman:
+		//	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
+		//	if (PlayerPawnBPClass.Class != nullptr)
+		//	{
+		//		DefaultPawnClass = PlayerPawnBPClass.Class;
+		//	}
+		//	break;
+		//case EPlayerJob::Gunslinger:
+		//	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_RangedCharacter.BP_RangedCharacter_C'"));
+		//	if (PlayerPawnBPClass.Class != nullptr)
+		//	{
+		//		DefaultPawnClass = PlayerPawnBPClass.Class;
+		//	}
+		//	break;
 		case EPlayerJob::Swordsman:
-			DefaultPawnClass = AMeleePlayerCharacter::StaticClass();
+			PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
 			break;
 		case EPlayerJob::Gunslinger:
-			DefaultPawnClass = ARangedPlayerCharacter::StaticClass();
+			PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_RangedCharacter_C'"));
 			break;
+		}
+
+		if (PlayerPawnClass != nullptr)
+		{
+			DefaultPawnClass = PlayerPawnClass;
 		}
 
 		ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
@@ -84,7 +119,12 @@ APlayerController* AEIGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteR
 
 		Ctrl->SetJob(EPlayerJob::Swordsman);
 
-		DefaultPawnClass = AMeleePlayerCharacter::StaticClass();
+		//DefaultPawnClass = AMeleePlayerCharacter::StaticClass();
+		UClass* PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
+		if (PlayerPawnClass != nullptr)
+		{
+			DefaultPawnClass = PlayerPawnClass;
+		}
 	}
 
 	FString	ID;
@@ -134,7 +174,7 @@ void AEIGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// ReceiveThread¿¡¼­ ¹Þ¾Æ¿Â ÆÐÅ¶ÀÌ ÀÖ´ÂÁö ÆÇ´ÜÇÑ´Ù.
+	// ReceiveThreadï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ ï¿½ï¿½Å¶ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½Ñ´ï¿½.
 	if (!mQueue->Empty())
 	{
 		int32	Header = 0, Length = 0;

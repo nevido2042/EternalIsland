@@ -13,7 +13,7 @@ UEIGameInstance::~UEIGameInstance()
 {
 }
 
-// �ʱ�ȭ
+// �ʱ�ȭ
 void UEIGameInstance::Init()
 {
 	Super::Init();

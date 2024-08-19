@@ -21,7 +21,7 @@ void ALoginGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	CNetworkManager::GetInst()->SetServerType(EServerType::Login);
 
 	CNetworkManager::GetInst()->Connect(TEXT("DedicateServer"),
-		TEXT("14.37.126.86"), 10020);
+		TEXT("192.168.0.118"), 10020);
 
 	FThreadInfo* Info = CNetworkManager::GetInst()->CreateThread<CReceiveThread>(TEXT("DedicateServerThread"));
 

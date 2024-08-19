@@ -29,7 +29,7 @@ void ACharacterSelectGameMode::InitGame(const FString& MapName,
 	CNetworkManager::GetInst()->SetServerType(EServerType::Select);
 
 	CNetworkManager::GetInst()->Connect(TEXT("DedicateServer"),
-		TEXT("14.37.126.86"), 10020);
+		TEXT("192.168.0.118"), 10020);
 
 	FThreadInfo* Info = CNetworkManager::GetInst()->CreateThread<CReceiveThread>(TEXT("DedicateServerThread"));
 
@@ -37,7 +37,7 @@ void ACharacterSelectGameMode::InitGame(const FString& MapName,
 
 	mQueue = CNetworkManager::GetInst()->FindPacketQueue(TEXT("DedicateServerThread_Queue"));
 
-	// ÀÏ½ÃÁ¤Áö µÇ¾î ÀÖ´Â ½º·¹µå¸¦ µ¿ÀÛ½ÃÅ²´Ù.
+	// ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½Û½ï¿½Å²ï¿½ï¿½.
 	CNetworkManager::GetInst()->SuspendThread(TEXT("DedicateServerThread"), false);
 
 	CNetworkManager::GetInst()->SendServerType(TEXT("DedicateServer"));
@@ -50,7 +50,7 @@ APlayerController* ACharacterSelectGameMode::Login(UPlayer* NewPlayer,
 	APlayerController* result = Super::Login(NewPlayer, InRemoteRole, Portal,
 		Options, UniqueId, ErrorMessage);
 
-	// ¿É¼ÇÁ¤º¸ ÀÐ¾î¿À±â
+	// ï¿½É¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½ï¿½
 	FString	ID;
 
 	if (FParse::Value(*Options, TEXT("ID="), ID))

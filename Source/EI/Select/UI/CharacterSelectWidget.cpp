@@ -20,14 +20,14 @@ void UCharacterSelectWidget::StartClick()
 
 	ASelectPlayerController* Ctrl = GetOwningPlayer<ASelectPlayerController>();
 
-	// GameInstance°¡ °¡Áö°í ÀÖ´Â ¼±ÅÃ Á÷¾÷À» ¾ò¾î¿Â´Ù.
+	// GameInstanceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â´ï¿½.
 	EPlayerJob	SelectJob = GameInst->GetSelectJob();
 
-	// Á÷¾÷À» ÀÌ¿ëÇÏ¿© ¿É¼ÇÀ» ¸¸µé¾îÁØ´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½Ï¿ï¿½ ï¿½É¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
 	FString	Option = FString::Printf(TEXT("Job=%d?ID=%s"), (int32)SelectJob,
 		*Ctrl->GetID());
 
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("14.37.126.86:10002"));
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10002"));
 }
 
 void UCharacterSelectWidget::EnableStartButton(bool Enable)

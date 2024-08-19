@@ -19,6 +19,7 @@ public:
 
 	virtual void BeginPlay() override;
 
+
 private:
 	class CPacketQueue* mQueue;
 	int32	mCount;

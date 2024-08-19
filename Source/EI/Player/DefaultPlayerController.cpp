@@ -54,7 +54,7 @@ void ADefaultPlayerController::OnPossess(APawn* InPawn)
 //	case EServerType::Select:
 //		break;
 //	case EServerType::Main:
-//		UGameplayStatics::OpenLevel(GetWorld(), TEXT("14.37.126.86:10002"), true, Option);
+//		UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10002"), true, Option);
 //		break;
 //	}
 //}
