@@ -116,19 +116,33 @@ void ALoginPlayerController::SendLoginInfo_Implementation(const FText& ID,
 
 void ALoginPlayerController::SendClient_Implementation(bool LoginSuccess, const FString& ID)
 {
+	//if (LoginSuccess)
+	//{
+	//	FString	Option = FString::Printf(TEXT("ID=%s"), *ID);
+	//
+ 	//
+	//	UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10001"));
+	//}
+	//
+	//else
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//		TEXT("Login Failed"));
+	//	LOG(TEXT("Login Failed"));
+	//}
 	if (LoginSuccess)
 	{
 		FString	Option = FString::Printf(TEXT("ID=%s"), *ID);
 
- 
+		// 로그 추가
+		UE_LOG(LogTemp, Warning, TEXT("Sending client to main level with ID: %s"), *ID);
+
 		UGameplayStatics::OpenLevel(GetWorld(), TEXT("192.168.0.118:10001"));
 	}
-
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-			TEXT("Login Failed"));
-		LOG(TEXT("Login Failed"));
+		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red, TEXT("Login Failed"));
+		UE_LOG(LogTemp, Warning, TEXT("Login Failed for ID: %s"), *ID);
 	}
 }
 

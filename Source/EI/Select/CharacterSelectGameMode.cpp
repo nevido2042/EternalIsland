@@ -53,11 +53,21 @@ APlayerController* ACharacterSelectGameMode::Login(UPlayer* NewPlayer,
 	// �ɼ����� �о����
 	FString	ID;
 
+	//if (FParse::Value(*Options, TEXT("ID="), ID))
+	//{
+	//	Cast<ASelectPlayerController>(result)->SetID(ID);
+	//}
 	if (FParse::Value(*Options, TEXT("ID="), ID))
 	{
+		// ID 값이 제대로 파싱되었는지 확인하기 위해 로그를 찍습니다.
+		UE_LOG(LogTemp, Warning, TEXT("CharacterSelectGameMode: ID found: %s"), *ID);
 		Cast<ASelectPlayerController>(result)->SetID(ID);
 	}
-
+	else
+	{
+		// ID 값이 파싱되지 않은 경우 로그를 찍습니다.
+		UE_LOG(LogTemp, Warning, TEXT("CharacterSelectGameMode: ID not found in Options"));
+	}
 	return result;
 }
 

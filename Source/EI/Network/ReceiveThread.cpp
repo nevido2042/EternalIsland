@@ -30,7 +30,7 @@ bool CReceiveThread::Init()
     return true;
 }
 
-// ¾ê´Â ¹«Á¶°Ç ÀçÁ¤ÀÇ ÇØ¾ßÇÑ´Ù.
+// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ñ´ï¿½.
 uint32 CReceiveThread::Run()
 {
     do

@@ -20,7 +20,7 @@ AEIGameModeBase::AEIGameModeBase()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 
-	//PlayerControllerClass = ADefaultPlayerController::StaticClass();
+	PlayerControllerClass = ADefaultPlayerController::StaticClass();
 	static ConstructorHelpers::FClassFinder<APlayerController> ControllerClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_DefaultPlayerController.BP_DefaultPlayerController_C'"));
 	if (IsValid(ControllerClass.Class))
 	{
@@ -67,105 +67,129 @@ APlayerController* AEIGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteR
 		Options, UniqueId, ErrorMessage);
 
 	LOGSTRING(Options);
+	UE_LOG(LogTemp, Warning, TEXT("Options string: %s"), *Options);
 
-	// �ɼ����� �о����
-	int32	CommandJob;
+	//int32	CommandJob;
+	//
+	//if (FParse::Value(*Options, TEXT("Job="), CommandJob))
+	//{
+	//	EPlayerJob Job = (EPlayerJob)CommandJob;
+	//
+	//	LOG(TEXT("Job : %d"), (int32)CommandJob);
+	//
+	//	UClass* PlayerPawnClass = nullptr;
+	//
+	//	switch (Job)
+	//	{
+	//	case EPlayerJob::Swordsman:
+	//		PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
+	//		break;
+	//	case EPlayerJob::Gunslinger:
+	//		PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_RangedCharacter_C'"));
+	//		break;
+	//	}
+	//
+	//	if (PlayerPawnClass != nullptr)
+	//	{
+	//		DefaultPawnClass = PlayerPawnClass;
+	//	}
+	//
+	//	ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
+	//
+	//	Ctrl->SetJob(Job);
+	//}
+	//
+	//else
+	//{
+	//	ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
+	//
+	//	Ctrl->SetJob(EPlayerJob::Gunslinger);
+	//
+	//	//DefaultPawnClass = AMeleePlayerCharacter::StaticClass();
+	//	UClass* PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_RangedCharacter_C'"));
+	//	if (PlayerPawnClass != nullptr)
+	//	{
+	//		DefaultPawnClass = PlayerPawnClass;
+	//	}
+	//}
+	//
+	//return result;
+	//APlayerController* result = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
 
-	if (FParse::Value(*Options, TEXT("Job="), CommandJob))
+	// GameInstance에서 직업 정보를 가져옴
+	UEIGameInstance* GameInst = GetWorld()->GetGameInstance<UEIGameInstance>();
+	if (IsValid(GameInst))
 	{
-		EPlayerJob Job = (EPlayerJob)CommandJob;
-
-		LOG(TEXT("Job : %d"), (int32)CommandJob);
+		EPlayerJob Job = GameInst->GetSelectJob();  // 선택된 직업 가져오기
 
 		UClass* PlayerPawnClass = nullptr;
 
+		// 직업에 따라 적절한 캐릭터 클래스를 로드
 		switch (Job)
 		{
-		//case EPlayerJob::Swordsman:
-		//	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
-		//	if (PlayerPawnBPClass.Class != nullptr)
-		//	{
-		//		DefaultPawnClass = PlayerPawnBPClass.Class;
-		//	}
-		//	break;
-		//case EPlayerJob::Gunslinger:
-		//	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_RangedCharacter.BP_RangedCharacter_C'"));
-		//	if (PlayerPawnBPClass.Class != nullptr)
-		//	{
-		//		DefaultPawnClass = PlayerPawnBPClass.Class;
-		//	}
-		//	break;
 		case EPlayerJob::Swordsman:
 			PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
 			break;
 		case EPlayerJob::Gunslinger:
-			PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_RangedCharacter_C'"));
+			PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_RangedCharacter.BP_RangedCharacter_C'"));
 			break;
 		}
 
+		// 올바른 클래스가 로드되었을 경우 DefaultPawnClass로 설정
 		if (PlayerPawnClass != nullptr)
 		{
 			DefaultPawnClass = PlayerPawnClass;
+			UE_LOG(LogTemp, Warning, TEXT("DefaultPawnClass set to: %s"), *PlayerPawnClass->GetName());
 		}
-
-		ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
-
-		Ctrl->SetJob(Job);
-	}
-
-	else
-	{
-		ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
-
-		Ctrl->SetJob(EPlayerJob::Swordsman);
-
-		//DefaultPawnClass = AMeleePlayerCharacter::StaticClass();
-		UClass* PlayerPawnClass = StaticLoadClass(APawn::StaticClass(), nullptr, TEXT("/Script/Engine.Blueprint'/Game/Game/Player/BluePrint/BP_MeleeCharacter.BP_MeleeCharacter_C'"));
-		if (PlayerPawnClass != nullptr)
+		else
 		{
-			DefaultPawnClass = PlayerPawnClass;
+			UE_LOG(LogTemp, Error, TEXT("Failed to load PlayerPawnClass for job: %d"), (int32)Job);
 		}
 	}
-
-	FString	ID;
-	if (FParse::Value(*Options, TEXT("ID="), ID))
-	{
-		ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
-
-		Ctrl->SetID(ID);
-
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
-			FString::Printf(TEXT("ID : %s"), *ID));
-
-		uint8	Packet[1016] = {};
-
-		int32	Length = 0;
-		int32	IDLength = ID.Len();
-
-		FMemory::Memcpy(Packet, &IDLength, sizeof(int32));
-		Length += sizeof(int32);
-
-		FMemory::Memcpy(Packet + Length, *ID, sizeof(TCHAR) * IDLength);
-		Length += (sizeof(TCHAR) * IDLength);
-
-		CNetworkManager::GetInst()->Send(TEXT("DedicateServer"),
-			(int32)EPacketHeader::PlayerInfo_Receive,
-			Length, Packet);
-	}
-
 	else
 	{
-		ID = FString::Printf(TEXT("sac%d"), mCount);
-		++mCount;
-
-		ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
-
-		Ctrl->SetID(ID);
-		LOGSTRING(ID);
-		LOG(TEXT("ID Failed"));
+		UE_LOG(LogTemp, Error, TEXT("GameInstance is not valid"));
 	}
-
 	return result;
+	//FString	ID;
+	//if (FParse::Value(*Options, TEXT("ID="), ID))
+	//{
+	//	ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
+	//
+	//	Ctrl->SetID(ID);
+	//
+	//	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red,
+	//		FString::Printf(TEXT("ID : %s"), *ID));
+	//
+	//	uint8	Packet[1016] = {};
+	//
+	//	int32	Length = 0;
+	//	int32	IDLength = ID.Len();
+	//
+	//	FMemory::Memcpy(Packet, &IDLength, sizeof(int32));
+	//	Length += sizeof(int32);
+	//
+	//	FMemory::Memcpy(Packet + Length, *ID, sizeof(TCHAR) * IDLength);
+	//	Length += (sizeof(TCHAR) * IDLength);
+	//
+	//	CNetworkManager::GetInst()->Send(TEXT("DedicateServer"),
+	//		(int32)EPacketHeader::PlayerInfo_Receive,
+	//		Length, Packet);
+	//}
+	//
+	//else
+	//{
+	//	ID = FString::Printf(TEXT("sac%d"), mCount);
+	//	++mCount;
+	//
+	//	ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(result);
+	//
+	//	Ctrl->SetID(ID);
+	//	LOGSTRING(ID);
+	//	LOG(TEXT("ID Failed"));
+	//}
+	//
+	//return result;
 }
 
 
@@ -174,96 +198,96 @@ void AEIGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// ReceiveThread���� �޾ƿ� ��Ŷ�� �ִ��� �Ǵ��Ѵ�.
-	if (!mQueue->Empty())
-	{
-		int32	Header = 0, Length = 0;
-		uint8	Packet[1016];
-
-		mQueue->Pop(Header, Length, Packet);
-
-
-		switch ((EPacketHeader)Header)
-		{
-			// Unreal -> Relay
-		case EPacketHeader::PlayerInfo_Send:
-			break;
-			// Relay -> Unreal
-		case EPacketHeader::PlayerInfo_Receive:
-		{
-			FString	ID;
-			Length = 0;
-
-			int32	IDLength = 0;
-
-			FMemory::Memcpy(&IDLength, Packet, sizeof(int32));
-			Length += sizeof(int32);
-
-			TCHAR	ReadID[256] = {};
-			FMemory::Memcpy(ReadID, Packet + Length, sizeof(TCHAR) * IDLength);
-			Length += (sizeof(TCHAR) * IDLength);
-
-			ID = ReadID;
-
-			EPlayerJob	Job;
-			FMemory::Memcpy(&Job, Packet + Length, sizeof(EPlayerJob));
-			Length += sizeof(EPlayerJob);
-
-			ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(GetWorld()->GetFirstPlayerController());
-
-			if (Ctrl)
-			{
-				AMainPlayerCharacter* PlayerPawn = Ctrl->GetPawn<AMainPlayerCharacter>();
-
-				if (PlayerPawn)
-				{
-					PlayerPawn->SetPlayerInfo(Job);
-				}
-			}
-		}
-		break;
-		case EPacketHeader::LevelTransition:
-		{
-			Length = 0;
-			int32	IDLength = 0;
-			FMemory::Memcpy(&IDLength, Packet, sizeof(int32));
-			Length += sizeof(int32);
-
-			TCHAR	ID[256] = {};
-			FMemory::Memcpy(ID, Packet + Length, sizeof(TCHAR) * IDLength);
-			Length += (sizeof(TCHAR) * IDLength);
-
-			EServerType	Type;
-
-			FMemory::Memcpy(&Type, Packet + Length, sizeof(EServerType));
-
-			TArray<AActor*>	CtrlArray;
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(),
-				ADefaultPlayerController::StaticClass(), CtrlArray);
-
-			ADefaultPlayerController* Ctrl = nullptr;
-
-			for (int32 i = 0; i < CtrlArray.Num(); ++i)
-			{
-				ADefaultPlayerController* CastCtrl =
-					Cast<ADefaultPlayerController>(CtrlArray[i]);
-
-				if (CastCtrl)
-				{
-					if (CastCtrl->GetID() == ID)
-					{
-						Ctrl = CastCtrl;
-						break;
-					}
-				}
-			}
-
-			if (!Ctrl)
-				break;
-
-			//Ctrl->ClientLevelTransition(Type);
-		}
-		break;
-		}
-	}
+	//// ReceiveThread���� �޾ƿ� ��Ŷ�� �ִ��� �Ǵ��Ѵ�.
+	//if (!mQueue->Empty())
+	//{
+	//	int32	Header = 0, Length = 0;
+	//	uint8	Packet[1016];
+	//
+	//	mQueue->Pop(Header, Length, Packet);
+	//
+	//
+	//	switch ((EPacketHeader)Header)
+	//	{
+	//		// Unreal -> Relay
+	//	case EPacketHeader::PlayerInfo_Send:
+	//		break;
+	//		// Relay -> Unreal
+	//	case EPacketHeader::PlayerInfo_Receive:
+	//	{
+	//		FString	ID;
+	//		Length = 0;
+	//
+	//		int32	IDLength = 0;
+	//
+	//		FMemory::Memcpy(&IDLength, Packet, sizeof(int32));
+	//		Length += sizeof(int32);
+	//
+	//		TCHAR	ReadID[256] = {};
+	//		FMemory::Memcpy(ReadID, Packet + Length, sizeof(TCHAR) * IDLength);
+	//		Length += (sizeof(TCHAR) * IDLength);
+	//
+	//		ID = ReadID;
+	//
+	//		EPlayerJob	Job;
+	//		FMemory::Memcpy(&Job, Packet + Length, sizeof(EPlayerJob));
+	//		Length += sizeof(EPlayerJob);
+	//
+	//		ADefaultPlayerController* Ctrl = Cast<ADefaultPlayerController>(GetWorld()->GetFirstPlayerController());
+	//
+	//		if (Ctrl)
+	//		{
+	//			AMainPlayerCharacter* PlayerPawn = Ctrl->GetPawn<AMainPlayerCharacter>();
+	//
+	//			if (PlayerPawn)
+	//			{
+	//				PlayerPawn->SetPlayerInfo(Job);
+	//			}
+	//		}
+	//	}
+	//	break;
+	//	case EPacketHeader::LevelTransition:
+	//	{
+	//		Length = 0;
+	//		int32	IDLength = 0;
+	//		FMemory::Memcpy(&IDLength, Packet, sizeof(int32));
+	//		Length += sizeof(int32);
+	//
+	//		TCHAR	ID[256] = {};
+	//		FMemory::Memcpy(ID, Packet + Length, sizeof(TCHAR) * IDLength);
+	//		Length += (sizeof(TCHAR) * IDLength);
+	//
+	//		EServerType	Type;
+	//
+	//		FMemory::Memcpy(&Type, Packet + Length, sizeof(EServerType));
+	//
+	//		TArray<AActor*>	CtrlArray;
+	//		UGameplayStatics::GetAllActorsOfClass(GetWorld(),
+	//			ADefaultPlayerController::StaticClass(), CtrlArray);
+	//
+	//		ADefaultPlayerController* Ctrl = nullptr;
+	//
+	//		for (int32 i = 0; i < CtrlArray.Num(); ++i)
+	//		{
+	//			ADefaultPlayerController* CastCtrl =
+	//				Cast<ADefaultPlayerController>(CtrlArray[i]);
+	//
+	//			if (CastCtrl)
+	//			{
+	//				if (CastCtrl->GetID() == ID)
+	//				{
+	//					Ctrl = CastCtrl;
+	//					break;
+	//				}
+	//			}
+	//		}
+	//
+	//		if (!Ctrl)
+	//			break;
+	//
+	//		//Ctrl->ClientLevelTransition(Type);
+	//	}
+	//	break;
+	//	}
+	//}
 }
