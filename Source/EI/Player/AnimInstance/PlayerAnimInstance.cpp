@@ -20,5 +20,8 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (!Pawn) { return; }
 
-	Speed = MovementComponent->Velocity.Length();
+	if (MovementComponent)
+	{
+		Speed = MovementComponent->Velocity.Length();
+	}
 }
