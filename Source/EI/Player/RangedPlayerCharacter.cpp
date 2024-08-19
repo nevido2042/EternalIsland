@@ -14,8 +14,8 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
 
     if (MeshAsset.Succeeded())
     {
-        // À§¿¡¼­ ºÒ·¯¿Â SkeletalMesh¸¦ Character Å¬·¡½º°¡ °¡Áö°í ÀÖ´Â
-        // SkeletalMeshComponent¿¡ ÁöÁ¤ÇØÁØ´Ù.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ SkeletalMeshï¿½ï¿½ Character Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½
+        // SkeletalMeshComponentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
         GetMesh()->SetSkeletalMesh(MeshAsset.Object);
     }
 
