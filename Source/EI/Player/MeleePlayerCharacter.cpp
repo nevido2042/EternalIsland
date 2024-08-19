@@ -42,6 +42,8 @@ void AMeleePlayerCharacter::NormalAttack(APawn* InTarget)
 
 void AMeleePlayerCharacter::QSkill()
 {
+    Super::QSkill();
+
     if (NormalAttackMontage)
     {
         MulticastPlayAttackMontage(NormalAttackMontage);
