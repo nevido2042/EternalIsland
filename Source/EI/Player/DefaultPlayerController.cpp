@@ -439,6 +439,7 @@ void ADefaultPlayerController::ServerWSkill_Implementation(const FVector& ClickL
 		StopMovement();
 		ControlledCharacter->LookAtMousePos(ClickLocation);
 		ControlledCharacter->WSkill();
+		ClientWSkill(ClickLocation);
 	}
 }
 
