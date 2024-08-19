@@ -31,4 +31,22 @@ public:
 	virtual void NormalAttack(APawn* InTarget) override;
 
 	virtual void QSkill();
+
+	virtual void WSkill();
+
+	virtual void ESkill(const FVector& ClickLocation);
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AProjectile> Projectile;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystemComponent* ParticleSystemComponent;
+
+	//UPROPERTY(EditAnywhere)
+	//class UNiagaraComponent* NiagaraComponent;
+
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastActiveSystem();
+	void MulticastActiveSystem_Implementation();
 };
