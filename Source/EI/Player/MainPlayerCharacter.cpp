@@ -197,9 +197,22 @@ void AMainPlayerCharacter::WSkill()
 
 void AMainPlayerCharacter::ESkill(const FVector& ClickLocation)
 {
-	/*if (!bIsCooldownActive)
+	//if (!bIsCooldownActive)
+	//{
+	//	StartCooldown();
+	//}
+
+	/*ADefaultPlayerController* DefaultPlayerController = Cast<ADefaultPlayerController>(GetController());
+	if (DefaultPlayerController)
 	{
-		StartCooldown();
+
+		UMainWidget* MainWidget = DefaultPlayerController->GetMainWidget();
+
+		if (MainWidget)
+		{
+			MainWidget->UpdateESkillCoolTimeBar(0.9f);
+
+		}
 	}*/
 
 	bMoveToDestination = false;

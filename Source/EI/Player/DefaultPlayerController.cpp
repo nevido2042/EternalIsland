@@ -159,62 +159,32 @@ void ADefaultPlayerController::OnThirdSkillClicked()
 
 void ADefaultPlayerController::ActiveSkill(ESkill InSkill)
 {
+	FVector ClickLocation = GetMouseLocation();
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
+	{
+		ControlledCharacter->LookAtMousePos(ClickLocation);
+	}
+
 	switch (InSkill)
 	{
 	case ESkill::NONE:
 		break;
 	case ESkill::Q:
 	{
-		if (ControlledCharacter)
-		{
-			FVector ClickLocation = GetMouseLocation();
-
-			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-			{
-				ControlledCharacter->LookAtMousePos(ClickLocation);
-			}
-			ServerQSkill(ClickLocation);
-
-		}
+		ServerQSkill(ClickLocation);
 		break;
 	}
 	case ESkill::W:
 	{
-		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
-		if (ControlledCharacter)
-		{
-			FVector ClickLocation = GetMouseLocation();
-			// 로그 출력: 클릭 위치 확인
-			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
-			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-			{
-				ControlledCharacter->LookAtMousePos(ClickLocation);
-			}
-			ServerWSkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
-			
-		}
-
+		ServerWSkill(ClickLocation);
 		break;
 	}
 		
 	case ESkill::E:
 	{
-		UE_LOG(LogTemp, Log, TEXT("OnAttackClicked called"));
-		if (ControlledCharacter)
-		{
-			FVector ClickLocation = GetMouseLocation();
-			// 로그 출력: 클릭 위치 확인
-			UE_LOG(LogTemp, Log, TEXT("ClickLocation: %s"), *ClickLocation.ToString());
-			if (GetWorld()->GetNetMode() == ENetMode::NM_Client)
-			{
-				ControlledCharacter->LookAtMousePos(ClickLocation);
-			}
-			ServerESkill(ClickLocation); // 서버에서 공격을 처리하도록 설정
-			
-		}
+		ServerESkill(ClickLocation);
 		break;
 	}
-		
 	default:
 		break;
 	}
@@ -470,14 +440,13 @@ bool ADefaultPlayerController::ServerESkill_Validate(const FVector& ClickLocatio
 	return true;
 }
 
-//void ADefaultPlayerController::MulticastServerWSkill_Implementation(const FVector& ClickLocation)
-//{
-//	if (ControlledCharacter)
-//	{
-//		UE_LOG(LogTemp, Log, TEXT("MulticastQSkill called on client/server"));
-//		ControlledCharacter->LookAtMousePos(ClickLocation);
-//	}
-//}
+void ADefaultPlayerController::ClientWSkill_Implementation(const FVector& ClickLocation)
+{
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->LookAtMousePos(ClickLocation);
+	}
+}
 
 void ADefaultPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

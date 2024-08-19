@@ -19,7 +19,7 @@ protected:
 	class UUserWidget* mHPBar;	
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class USkillSlot* ESkillSlot;
+	class UUserWidget* ESkillSlot;
 
 public:
 	void UpdateHPBar(float Value);

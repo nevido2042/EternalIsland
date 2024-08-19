@@ -20,6 +20,7 @@ ARangedPlayerCharacter::ARangedPlayerCharacter()
 
     ParticleSystemComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleSystemComponent"));
     ParticleSystemComponent->SetupAttachment(RootComponent);
+    ParticleSystemComponent->SetAutoActivate(false);
     ParticleSystemComponent->SetIsReplicated(true);
 }
 
