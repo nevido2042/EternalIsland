@@ -27,7 +27,6 @@ private:
 public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
 	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage);
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
