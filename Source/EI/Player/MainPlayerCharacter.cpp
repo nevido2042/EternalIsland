@@ -264,18 +264,18 @@ void AMainPlayerCharacter::CapsuleHitCheck(float Radius , float Height)
 		ECollisionChannel::ECC_GameTraceChannel1,
 		FCollisionShape::MakeCapsule(Radius, Height), param);
 
-	DrawDebugSphere(GetWorld(), StartLoc, 10.f, 32, FColor::Green, false, 1.f);
-	DrawDebugSphere(GetWorld(), EndLoc, 10.f, 32, FColor::Red, false, 1.f);
-	DrawDebugCapsule(
-		GetWorld(),											// 월드 컨텍스트
-		(StartLoc + EndLoc) / 2.f,								// 캡슐의 중심 위치
-		Height,												// 캡슐의 반 높이 (전체 높이의 절반)
-		Radius,												// 캡슐의 반지름
-		CapsuleRot,									// 캡슐의 회전 (기본적으로 회전 없음)
-		FColor::Red,										// 캡슐의 색상
-		false,												// 지속적으로 드로우 (true면 지속적으로, false면 한 번만)
-		0.5f
-	);
+	//DrawDebugSphere(GetWorld(), StartLoc, 10.f, 32, FColor::Green, false, 1.f);
+	//DrawDebugSphere(GetWorld(), EndLoc, 10.f, 32, FColor::Red, false, 1.f);
+	//DrawDebugCapsule(
+	//	GetWorld(),											// 월드 컨텍스트
+	//	(StartLoc + EndLoc) / 2.f,								// 캡슐의 중심 위치
+	//	Height,												// 캡슐의 반 높이 (전체 높이의 절반)
+	//	Radius,												// 캡슐의 반지름
+	//	CapsuleRot,									// 캡슐의 회전 (기본적으로 회전 없음)
+	//	FColor::Red,										// 캡슐의 색상
+	//	false,												// 지속적으로 드로우 (true면 지속적으로, false면 한 번만)
+	//	0.5f
+	//);
 
 	AActor* HitActor = result.GetActor();
 	if (!IsValid(HitActor))
