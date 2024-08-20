@@ -18,6 +18,11 @@ ADefaultPlayerState::ADefaultPlayerState()
 }
 void ADefaultPlayerState::InflictDamage(int Amount)
 {
+	if (bImmortal)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player is immortal. No damage taken."));
+		return;
+	}
 	AddHP(-Amount);
 
 	if (mHP <= 0)
@@ -69,4 +74,5 @@ void ADefaultPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ADefaultPlayerState, mAttackDamage);
 	DOREPLIFETIME(ADefaultPlayerState, mLevel);
 	DOREPLIFETIME(ADefaultPlayerState, mExp);
+	DOREPLIFETIME(ADefaultPlayerState, bImmortal);
 }

@@ -36,6 +36,9 @@ private:
 	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Exp, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 	int32	mExp;
 
+	UPROPERTY(VisibleAnywhere, Replicated, Category = Data, meta = (AllowPrivateAccess = "true"))
+	bool bImmortal;
+
 public:
 	int32 GetAttackDamage() const
 	{
@@ -79,6 +82,10 @@ public:
 		else
 			mHP = HP;
 
+	}
+	void SetImmortal(bool param)
+	{
+		bImmortal = param;
 	}
 
 public:
